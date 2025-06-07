@@ -15,29 +15,17 @@
           <object class="GtkBox" id="main_box">
             <child>
               <object class="AdwPreferencesPage">
-                <!-- <property name="title">General</property>
-                <property name="icon-name">org.gnome.Settings-symbolic</property> -->
-                <property name="banner">
-                  <object class="AdwBanner" id="lock_banner">
-                    <property name="revealed">true</property>
-                    <property name="title">Some settings are locked</property>
-                    <property name="button-label">_Unlock…</property>
-                    <property name="button-style">suggested</property>
-                  </object>
-                </property>
                 <child>
                   <object class="AdwPreferencesGroup">
                     <property name="title">Kernel Features</property>
                     <child>
                       <object class="AdwSwitchRow" id="fnlock_row">
-                        <property name="sensitive">false</property>
                         <property name="title">FN _Lock</property>
                         <property name="use-underline">true</property>
                       </object>
                     </child>
                     <child>
                       <object class="AdwSwitchRow" id="reader_row">
-                        <property name="sensitive">false</property>
                         <property name="title">_Reader Mode</property>
                         <property name="subtitle">In reader mode the screen colors change (blue color reduced)</property>
                         <property name="use-underline">true</property>
@@ -45,7 +33,6 @@
                     </child>
                     <child>
                       <object class="AdwSpinRow" id="battery_row">
-                        <property name="sensitive">false</property>
                         <property name="title">_Battery Care Limit</property>
                         <property name="subtitle">Set the maximum capacity to charge the battery: limiting the charge reduces battery capacity loss over time</property>
                         <property name="use-underline">true</property>
@@ -64,14 +51,12 @@
                     </child>
                     <child>
                       <object class="AdwSwitchRow" id="fan_row">
-                        <property name="sensitive">false</property>
                         <property name="title">Silent _Fan Mode</property>
                         <property name="use-underline">true</property>
                       </object>
                     </child>
                     <child>
                       <object class="AdwSwitchRow" id="usb_row">
-                        <property name="sensitive">false</property>
                         <property name="title">_USB Charge</property>
                         <property name="subtitle">Charge another device from the USB port while the device is turned off</property>
                         <property name="use-underline">true</property>
