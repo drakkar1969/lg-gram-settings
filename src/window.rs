@@ -8,9 +8,9 @@ use crate::Application;
 //------------------------------------------------------------------------------
 // CONSTANTS
 //------------------------------------------------------------------------------
+const BATTERY_PATH: &str = "/sys/devices/platform/lg-laptop/battery_care_limit";
 const FNLOCK_PATH: &str = "/sys/devices/platform/lg-laptop/fn_lock";
 const READER_PATH: &str = "/sys/devices/platform/lg-laptop/reader_mode";
-const BATTERY_PATH: &str = "/sys/devices/platform/lg-laptop/battery_care_limit";
 const FAN_PATH: &str = "/sys/devices/platform/lg-laptop/fan_mode";
 const USB_PATH: &str = "/sys/devices/platform/lg-laptop/usb_charge";
 
