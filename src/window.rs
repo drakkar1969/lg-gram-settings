@@ -1,7 +1,18 @@
+use std::fs;
+
 use gtk::{gio, glib};
 use adw::subclass::prelude::*;
 
 use crate::Application;
+
+//------------------------------------------------------------------------------
+// CONSTANTS
+//------------------------------------------------------------------------------
+const FNLOCK_PATH: &str = "/sys/devices/platform/lg-laptop/fn_lock";
+const READER_PATH: &str = "/sys/devices/platform/lg-laptop/reader_mode";
+const BATTERY_PATH: &str = "/sys/devices/platform/lg-laptop/battery_care_limit";
+const FAN_PATH: &str = "/sys/devices/platform/lg-laptop/fan_mode";
+const USB_PATH: &str = "/sys/devices/platform/lg-laptop/usb_charge";
 
 //------------------------------------------------------------------------------
 // MODULE: MainWindow
@@ -15,8 +26,16 @@ mod imp {
     #[derive(Default, gtk::CompositeTemplate)]
     #[template(resource = "/com/github/LG-GramSettings/ui/window.ui")]
     pub struct MainWindow {
-        // #[template_child]
-        // pub(super) sidebar_breakpoint: TemplateChild<adw::Breakpoint>,
+        #[template_child]
+        pub(super) fnlock_row: TemplateChild<adw::SwitchRow>,
+        #[template_child]
+        pub(super) reader_row: TemplateChild<adw::SwitchRow>,
+        #[template_child]
+        pub(super) battery_row: TemplateChild<adw::SpinRow>,
+        #[template_child]
+        pub(super) fan_row: TemplateChild<adw::SwitchRow>,
+        #[template_child]
+        pub(super) usb_row: TemplateChild<adw::SwitchRow>,
      }
 
     //---------------------------------------
@@ -41,22 +60,13 @@ mod imp {
         //---------------------------------------
         // Constructor
         //---------------------------------------
-        // fn constructed(&self) {
-        //     self.parent_constructed();
+        fn constructed(&self) {
+            self.parent_constructed();
 
-        //     let obj = self.obj();
+            let obj = self.obj();
 
-        //     obj.setup_dialogs();
-        //     obj.setup_signals();
-
-        //     obj.bind_gsettings();
-
-        //     obj.setup_widgets();
-
-        //     obj.setup_alpm(true);
-
-        //     obj.setup_inotify();
-        // }
+            obj.init_kernel_features();
+        }
     }
 
     impl WidgetImpl for MainWindow {}
@@ -83,6 +93,47 @@ impl MainWindow {
         glib::Object::builder()
             .property("application", app)
             .build()
+    }
+
+    //---------------------------------------
+    // Init kernel features
+    //---------------------------------------
+    fn init_kernel_features(&self) {
+        let imp = self.imp();
+
+        let fn_lock = fs::read_to_string(FNLOCK_PATH).ok()
+            .and_then(|value| value.replace("\n", "").parse::<u32>().ok())
+            .map(|value| value != 0)
+            .unwrap_or_default();
+
+        imp.fnlock_row.set_active(fn_lock);
+
+        let reader_mode = fs::read_to_string(READER_PATH).ok()
+            .and_then(|value| value.replace("\n", "").parse::<u32>().ok())
+            .map(|value| value != 0)
+            .unwrap_or_default();
+
+        imp.reader_row.set_active(reader_mode);
+
+        let battery_limit = fs::read_to_string(BATTERY_PATH).ok()
+            .and_then(|value| value.replace("\n", "").parse::<f64>().ok())
+            .unwrap_or(100.0);
+        
+        imp.battery_row.set_value(battery_limit);
+
+        let fan_mode = fs::read_to_string(FAN_PATH).ok()
+            .and_then(|value| value.replace("\n", "").parse::<u32>().ok())
+            .map(|value| value == 0)
+            .unwrap_or_default();
+
+        imp.fan_row.set_active(fan_mode);
+
+        let usb_charge = fs::read_to_string(USB_PATH).ok()
+            .and_then(|value| value.replace("\n", "").parse::<u32>().ok())
+            .map(|value| value != 0)
+            .unwrap_or_default();
+
+        imp.usb_row.set_active(usb_charge);
     }
 
     //---------------------------------------

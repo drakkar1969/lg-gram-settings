@@ -30,12 +30,14 @@
                     <property name="title">Kernel Features</property>
                     <child>
                       <object class="AdwSwitchRow" id="fnlock_row">
+                        <property name="sensitive">false</property>
                         <property name="title">FN _Lock</property>
                         <property name="use-underline">true</property>
                       </object>
                     </child>
                     <child>
                       <object class="AdwSwitchRow" id="reader_row">
+                        <property name="sensitive">false</property>
                         <property name="title">_Reader Mode</property>
                         <property name="subtitle">In reader mode the screen colors change (blue color reduced)</property>
                         <property name="use-underline">true</property>
@@ -43,6 +45,7 @@
                     </child>
                     <child>
                       <object class="AdwSpinRow" id="battery_row">
+                        <property name="sensitive">false</property>
                         <property name="title">_Battery Care Limit</property>
                         <property name="subtitle">Set the maximum capacity to charge the battery: limiting the charge reduces battery capacity loss over time</property>
                         <property name="use-underline">true</property>
@@ -61,12 +64,14 @@
                     </child>
                     <child>
                       <object class="AdwSwitchRow" id="fan_row">
+                        <property name="sensitive">false</property>
                         <property name="title">Silent _Fan Mode</property>
                         <property name="use-underline">true</property>
                       </object>
                     </child>
                     <child>
                       <object class="AdwSwitchRow" id="usb_row">
+                        <property name="sensitive">false</property>
                         <property name="title">_USB Charge</property>
                         <property name="subtitle">Charge another device from the USB port while the device is turned off</property>
                         <property name="use-underline">true</property>
