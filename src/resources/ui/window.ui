@@ -34,7 +34,7 @@
                     <child>
                       <object class="AdwSpinRow" id="battery_row">
                         <property name="title">_Battery Care Limit</property>
-                        <property name="subtitle">Set the maximum capacity to charge the battery: limiting the charge reduces battery capacity loss over time</property>
+                        <property name="subtitle">Set the maximum capacity to charge the battery (limiting the charge reduces battery capacity loss over time)</property>
                         <property name="use-underline">true</property>
                         <property name="numeric">true</property>
                         <property name="snap-to-ticks">true</property>
@@ -47,6 +47,13 @@
                             <property name="value">100</property>
                           </object>
                         </property>
+                        <child type="suffix">
+                          <object class="GtkButton" id="battery_set_button">
+                            <property name="valign">center</property>
+                            <property name="margin-start">12</property>
+                            <property name="label">Set</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
