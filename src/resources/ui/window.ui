@@ -19,20 +19,8 @@
                   <object class="AdwPreferencesGroup">
                     <property name="title">Kernel Features</property>
                     <child>
-                      <object class="AdwSwitchRow" id="fnlock_row">
-                        <property name="title">FN _Lock</property>
-                        <property name="use-underline">true</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="AdwSwitchRow" id="reader_row">
-                        <property name="title">_Reader Mode</property>
-                        <property name="subtitle">In reader mode the screen colors change (blue color reduced)</property>
-                        <property name="use-underline">true</property>
-                      </object>
-                    </child>
-                    <child>
                       <object class="AdwSpinRow" id="battery_row">
+                        <property name="activatable">false</property>
                         <property name="title">_Battery Care Limit</property>
                         <property name="subtitle">Set the maximum capacity to charge the battery (limiting the charge reduces battery capacity loss over time)</property>
                         <property name="use-underline">true</property>
@@ -54,6 +42,19 @@
                             <property name="label">Set</property>
                           </object>
                         </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwSwitchRow" id="fnlock_row">
+                        <property name="title">FN _Lock</property>
+                        <property name="use-underline">true</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwSwitchRow" id="reader_row">
+                        <property name="title">_Reader Mode</property>
+                        <property name="subtitle">In reader mode the screen colors change (blue color reduced)</property>
+                        <property name="use-underline">true</property>
                       </object>
                     </child>
                     <child>

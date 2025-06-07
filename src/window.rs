@@ -27,11 +27,11 @@ mod imp {
     #[template(resource = "/com/github/LG-GramSettings/ui/window.ui")]
     pub struct MainWindow {
         #[template_child]
+        pub(super) battery_row: TemplateChild<adw::SpinRow>,
+        #[template_child]
         pub(super) fnlock_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub(super) reader_row: TemplateChild<adw::SwitchRow>,
-        #[template_child]
-        pub(super) battery_row: TemplateChild<adw::SpinRow>,
         #[template_child]
         pub(super) fan_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
@@ -101,6 +101,12 @@ impl MainWindow {
     fn init_kernel_features(&self) {
         let imp = self.imp();
 
+        let battery_limit = fs::read_to_string(BATTERY_PATH).ok()
+            .and_then(|value| value.replace("\n", "").parse::<f64>().ok())
+            .unwrap_or(100.0);
+        
+        imp.battery_row.set_value(battery_limit);
+
         let fn_lock = fs::read_to_string(FNLOCK_PATH).ok()
             .and_then(|value| value.replace("\n", "").parse::<u32>().ok())
             .map(|value| value != 0)
@@ -114,12 +120,6 @@ impl MainWindow {
             .unwrap_or_default();
 
         imp.reader_row.set_active(reader_mode);
-
-        let battery_limit = fs::read_to_string(BATTERY_PATH).ok()
-            .and_then(|value| value.replace("\n", "").parse::<f64>().ok())
-            .unwrap_or(100.0);
-        
-        imp.battery_row.set_value(battery_limit);
 
         let fan_mode = fs::read_to_string(FAN_PATH).ok()
             .and_then(|value| value.replace("\n", "").parse::<u32>().ok())
