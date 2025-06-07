@@ -1,5 +1,5 @@
 use gtk::{gio, glib};
-use gtk::prelude::*;
+use adw::prelude::*;
 use adw::subclass::prelude::*;
 
 use crate::window::MainWindow;
@@ -30,11 +30,11 @@ mod imp {
         //---------------------------------------
         // Constructor
         //---------------------------------------
-        // fn constructed(&self) {
-        //     self.parent_constructed();
+        fn constructed(&self) {
+            self.parent_constructed();
 
-        //     self.obj().setup_actions();
-        // }
+            self.obj().setup_actions();
+        }
     }
 
     impl ApplicationImpl for Application {
@@ -80,38 +80,38 @@ impl Application {
     //---------------------------------------
     // Setup actions
     //---------------------------------------
-    // fn setup_actions(&self) {
-    //     // Quit action
-    //     let quit_action = gio::ActionEntry::builder("quit-app")
-    //         .activate(move |app: &Self, _, _| app.quit())
-    //         .build();
+    fn setup_actions(&self) {
+        // Quit action
+        let quit_action = gio::ActionEntry::builder("quit-app")
+            .activate(move |app: &Self, _, _| app.quit())
+            .build();
 
-    //     // Show about dialog action
-    //     let about_action = gio::ActionEntry::builder("show-about")
-    //         .activate(move |app: &Self, _, _| {
-    //             let window = app.active_window()
-    //                 .expect("Failed to retrieve active window");
+        // Show about dialog action
+        let about_action = gio::ActionEntry::builder("show-about")
+            .activate(move |app: &Self, _, _| {
+                let window = app.active_window()
+                    .expect("Failed to retrieve active window");
 
-    //             let about_dialog = adw::AboutDialog::builder()
-    //                 .application_name("PacView")
-    //                 .application_icon("software-properties")
-    //                 .developer_name("draKKar1969")
-    //                 .version(env!("CARGO_PKG_VERSION"))
-    //                 .website("https://github.com/drakkar1969/pacview")
-    //                 .developers(["draKKar1969"])
-    //                 .designers(["draKKar1969"])
-    //                 .copyright("© 2023 draKKar1969")
-    //                 .license_type(gtk::License::Gpl30)
-    //                 .build();
+                let about_dialog = adw::AboutDialog::builder()
+                    .application_name("LG Gram Settings")
+                    // .application_icon("software-properties")
+                    .developer_name("draKKar1969")
+                    .version(env!("CARGO_PKG_VERSION"))
+                    // .website("https://github.com/drakkar1969/lg-gram-settings")
+                    .developers(["draKKar1969"])
+                    .designers(["draKKar1969"])
+                    .copyright("© 2025 draKKar1969")
+                    .license_type(gtk::License::Gpl30)
+                    .build();
 
-    //             about_dialog.present(Some(&window));
-    //         })
-    //         .build();
+                about_dialog.present(Some(&window));
+            })
+            .build();
 
-    //     // Add actions to app
-    //     self.add_action_entries([quit_action, about_action]);
+        // Add actions to app
+        self.add_action_entries([quit_action, about_action]);
 
-    //     // Add app keyboard shortcuts
-    //     self.set_accels_for_action("app.quit-app", &["<ctrl>Q"]);
-    // }
+        // Add app keyboard shortcuts
+        self.set_accels_for_action("app.quit-app", &["<ctrl>Q"]);
+    }
 }
