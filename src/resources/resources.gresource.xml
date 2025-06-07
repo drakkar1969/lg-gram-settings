@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/com/github/LG-GramSettings/icons/scalable/actions/">
+    <!-- <file alias="status-updates-symbolic.svg">icons/status-updates-symbolic.svg</file> -->
+  </gresource>
+  <gresource prefix="/com/github/LG-GramSettings/">
+    <!-- <file compressed="true">style.css</file>
+    <file compressed="true" preprocess="xml-stripblanks">gtk/help-overlay.ui</file>
+    <file compressed="true">icons/pkg-explicit.svg</file> -->
+    <file compressed="true" preprocess="xml-stripblanks">ui/window.ui</file>
+  </gresource>
+</gresources>
