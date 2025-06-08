@@ -1,6 +1,6 @@
 mod app;
 mod window;
-mod kernel_features;
+mod modules;
 
 use gtk::{gio, glib};
 use gtk::prelude::*;

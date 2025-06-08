@@ -6,7 +6,7 @@ use adw::prelude::*;
 use glib::clone;
 
 use crate::Application;
-use crate::kernel_features::kernel_features;
+use crate::modules::kernel_features;
 
 //------------------------------------------------------------------------------
 // MODULE: MainWindow
