@@ -53,7 +53,7 @@
                 </child>
                 <child>
                   <object class="AdwSwitchRow" id="battery_persistent_row">
-                    <property name="title">Persistent</property>
+                    <property name="title">_Persistent</property>
                     <property name="subtitle">Make setting persistent across reboots (requires systemd service)</property>
                     <property name="use-underline">true</property>
                     <child type="prefix">
@@ -84,7 +84,7 @@
                 </child>
                 <child>
                   <object class="AdwSwitchRow" id="usb_persistent_row">
-                    <property name="title">Persistent</property>
+                    <property name="title">Persisten_t</property>
                     <property name="subtitle">Make setting persistent across reboots (requires systemd service)</property>
                     <property name="use-underline">true</property>
                     <child type="prefix">
@@ -115,8 +115,8 @@
                 </child>
                 <child>
                   <object class="AdwSwitchRow" id="reader_key_row">
-                    <property name="title">Keyboard Shortcut</property>
-                    <property name="subtitle">Fn+F9 global shortcut to toggle mode</property>
+                    <property name="title">_Keyboard Shortcut</property>
+                    <property name="subtitle">Enable Fn+F9 global shortcut to toggle mode</property>
                     <property name="use-underline">true</property>
                     <child type="prefix">
                       <object class="GtkImage">
