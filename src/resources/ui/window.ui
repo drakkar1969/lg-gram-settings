@@ -33,7 +33,7 @@
                 <child>
                   <object class="AdwComboRow" id="battery_limit_row">
                     <property name="title">_Battery Care Limit</property>
-                    <property name="subtitle">Set the maximum capacity to charge the battery (limiting the charge reduces battery capacity loss over time)</property>
+                    <property name="subtitle">Maximum capacity to charge the battery (limiting the charge reduces battery capacity loss over time)</property>
                     <property name="use-underline">true</property>
                     <property name="model">
                       <object class="GtkStringList">
@@ -133,7 +133,7 @@
                 <property name="title">Other Features</property>
                 <child>
                   <object class="AdwSwitchRow" id="fn_lock_row">
-                    <property name="title">FN _Lock</property>
+                    <property name="title">Fn _Lock</property>
                     <property name="use-underline">true</property>
                     <child type="prefix">
                       <object class="GtkImage">
@@ -145,7 +145,7 @@
                 </child>
                 <child>
                   <object class="AdwSwitchRow" id="fan_mode_row">
-                    <property name="title">Silent _Fan Mode</property>
+                    <property name="title">_Fan Silent Mode</property>
                     <property name="use-underline">true</property>
                     <child type="prefix">
                       <object class="GtkImage">
