@@ -1,6 +1,9 @@
+use std::cell::Cell;
+
 use gtk::{gio, glib};
 use adw::subclass::prelude::*;
 use adw::prelude::*;
+use glib::clone;
 
 use crate::Application;
 use crate::kernel_features::kernel_features;
@@ -27,6 +30,9 @@ mod imp {
         pub(super) fn_lock_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub(super) fan_mode_row: TemplateChild<adw::SwitchRow>,
+
+        pub(super) is_battery_limit_reverting: Cell<bool>,
+        pub(super) is_fn_lock_reverting: Cell<bool>,
      }
 
     //---------------------------------------
@@ -131,23 +137,53 @@ impl MainWindow {
         let imp = self.imp();
 
         // Battery limit
-        imp.battery_limit_row.connect_selected_notify(|row| {
-            let value = if row.selected() == 1 { 80 } else { 100 };
+        imp.battery_limit_row.connect_selected_notify(clone!(
+            #[weak] imp,
+            move |row| {
+                if imp.is_battery_limit_reverting.get() {
+                    imp.is_battery_limit_reverting.set(false);
+                    return
+                }
 
-            match kernel_features::set_battery_limit(value) {
-                Ok(_) => {},
-                Err(_) => {}
+                let value = if row.selected() == 1 { 80 } else { 100 };
+
+                match kernel_features::set_battery_limit(value) {
+                    Ok(status) if !status.success() => {
+                        imp.is_battery_limit_reverting.set(true);
+                        row.set_selected(1 - row.selected());
+                    },
+                    Err(_) => {
+                        imp.is_battery_limit_reverting.set(true);
+                        row.set_selected(1 - row.selected());
+                    },
+                    _ => {}
+                }
             }
-        });
+        ));
 
         // Fn lock
-        imp.fn_lock_row.connect_active_notify(|row| {
-            let value = if row.is_active() { 1 } else { 0 };
+        imp.fn_lock_row.connect_active_notify(clone!(
+            #[weak] imp,
+            move |row| {
+                if imp.is_fn_lock_reverting.get() {
+                    imp.is_fn_lock_reverting.set(false);
+                    return
+                }
 
-            match kernel_features::set_fn_lock(value) {
-                Ok(_) => {},
-                Err(_) => {}
+                let value = if row.is_active() { 1 } else { 0 };
+
+                match kernel_features::set_fn_lock(value) {
+                    Ok(status) if !status.success() => {
+                        imp.is_fn_lock_reverting.set(true);
+                        row.set_active(!row.is_active());
+                    },
+                    Err(_) => {
+                        imp.is_fn_lock_reverting.set(true);
+                        row.set_active(!row.is_active());
+                    },
+                    _ => {}
+                }
             }
-        });
+        ));
     }
 }
