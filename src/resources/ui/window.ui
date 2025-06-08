@@ -43,13 +43,25 @@
                         </items>
                       </object>
                     </property>
+                    <child type="prefix">
+                      <object class="GtkImage">
+                        <property name="icon-name">gram-battery-symbolic</property>
+                        <property name="pixel-size">24</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
                   <object class="AdwSwitchRow" id="battery_persistent_row">
                     <property name="title">Persistent</property>
-                    <property name="subtitle">Make setting persistent across reboots</property>
+                    <property name="subtitle">Make setting persistent across reboots (requires systemd service)</property>
                     <property name="use-underline">true</property>
+                    <child type="prefix">
+                      <object class="GtkImage">
+                        <property name="icon-name">gram-service-symbolic</property>
+                        <property name="pixel-size">24</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
@@ -62,13 +74,25 @@
                     <property name="title">_USB Charge</property>
                     <property name="subtitle">Charge another device from the USB port while the device is turned off</property>
                     <property name="use-underline">true</property>
+                    <child type="prefix">
+                      <object class="GtkImage">
+                        <property name="icon-name">gram-usb-symbolic</property>
+                        <property name="pixel-size">24</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
                   <object class="AdwSwitchRow" id="usb_persistent_row">
                     <property name="title">Persistent</property>
-                    <property name="subtitle">Make setting persistent across reboots</property>
+                    <property name="subtitle">Make setting persistent across reboots (requires systemd service)</property>
                     <property name="use-underline">true</property>
+                    <child type="prefix">
+                      <object class="GtkImage">
+                        <property name="icon-name">gram-service-symbolic</property>
+                        <property name="pixel-size">24</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
@@ -81,6 +105,12 @@
                     <property name="title">_Reader Mode</property>
                     <property name="subtitle">In reader mode the screen colors change (blue color reduced)</property>
                     <property name="use-underline">true</property>
+                    <child type="prefix">
+                      <object class="GtkImage">
+                        <property name="icon-name">gram-reader-symbolic</property>
+                        <property name="pixel-size">24</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
@@ -88,6 +118,12 @@
                     <property name="title">Keyboard Shortcut</property>
                     <property name="subtitle">Fn+F9 global shortcut to toggle mode</property>
                     <property name="use-underline">true</property>
+                    <child type="prefix">
+                      <object class="GtkImage">
+                        <property name="icon-name">gram-keyboard-symbolic</property>
+                        <property name="pixel-size">24</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
@@ -99,12 +135,24 @@
                   <object class="AdwSwitchRow" id="fn_lock_row">
                     <property name="title">FN _Lock</property>
                     <property name="use-underline">true</property>
+                    <child type="prefix">
+                      <object class="GtkImage">
+                        <property name="icon-name">gram-fnlock-symbolic</property>
+                        <property name="pixel-size">24</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
                   <object class="AdwSwitchRow" id="fan_mode_row">
                     <property name="title">Silent _Fan Mode</property>
                     <property name="use-underline">true</property>
+                    <child type="prefix">
+                      <object class="GtkImage">
+                        <property name="icon-name">gram-fan-symbolic</property>
+                        <property name="pixel-size">24</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
