@@ -57,6 +57,7 @@ mod imp {
             let obj = self.obj();
 
             obj.init_kernel_features();
+            obj.setup_signals();
         }
     }
 
@@ -121,5 +122,23 @@ impl MainWindow {
             Ok(charge) => { imp.usb_charge_row.set_active(charge); },
             Err(_) => {}
         }
+
+    }
+
+    //---------------------------------------
+    // Setup signals
+    //---------------------------------------
+    fn setup_signals(&self) {
+        let imp = self.imp();
+
+        // Fn lock
+        imp.fn_lock_row.connect_active_notify(|row| {
+            let value = if row.is_active() { 1 } else { 0 };
+
+            match kernel_features::set_fn_lock(value) {
+                Ok(_) => {},
+                Err(_) => {}
+            }
+        });
     }
 }

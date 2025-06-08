@@ -3,6 +3,8 @@
 //------------------------------------------------------------------------------
 pub mod kernel_features {
     use std::fs;
+    use std::process::{Command, ExitStatus, Stdio};
+    use std::io::Write;
 
     //---------------------------------------
     // Constants
@@ -14,7 +16,7 @@ pub mod kernel_features {
     const USB_PATH: &str = "/sys/devices/platform/lg-laptop/usb_charge";
 
     //---------------------------------------
-    // Parse u32 from file helper function
+    // Read/write helper functions
     //---------------------------------------
     fn parse_u32_from_file(file: &str) -> Result<u32, String> {
         fs::read_to_string(file)
@@ -25,6 +27,25 @@ pub mod kernel_features {
             })
     }
 
+    fn write_u32_to_file(value: u32, file: &str) -> Result<ExitStatus, String> {
+        let mut process = Command::new("pkexec")
+            .arg("tee")
+            .arg(file)
+            .stdin(Stdio::piped())
+            .spawn()
+            .map_err(|error| error.to_string())?;
+
+        if let Some(mut stdin) = process.stdin.take() {
+            let content = format!("{value}\n");
+
+            stdin.write_all(content.as_bytes())
+                .map_err(|error| error.to_string())?;
+        }
+
+        process.wait()
+            .map_err(|error| error.to_string())
+    }
+
     //---------------------------------------
     // Battery limit function
     //---------------------------------------
@@ -32,15 +53,19 @@ pub mod kernel_features {
         let battery_limit = parse_u32_from_file(BATTERY_PATH)?;
 
         Ok(if battery_limit == 100 { 0 } else { 1 })
-	}
+    }
 
     //---------------------------------------
-    // Fn lock function
+    // Fn lock functions
     //---------------------------------------
     pub fn fn_lock() -> Result<bool, String> {
         let fn_lock = parse_u32_from_file(FNLOCK_PATH)?;
 
         Ok(fn_lock != 0)
+    }
+
+    pub fn set_fn_lock(value: u32) -> Result<std::process::ExitStatus, String> {
+        write_u32_to_file(value, FNLOCK_PATH)
     }
 
     //---------------------------------------
