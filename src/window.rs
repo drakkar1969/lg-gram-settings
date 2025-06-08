@@ -20,13 +20,13 @@ mod imp {
         #[template_child]
         pub(super) battery_limit_row: TemplateChild<adw::ComboRow>,
         #[template_child]
-        pub(super) fn_lock_row: TemplateChild<adw::SwitchRow>,
+        pub(super) usb_charge_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub(super) reader_mode_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub(super) fan_mode_row: TemplateChild<adw::SwitchRow>,
+        pub(super) fn_lock_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub(super) usb_charge_row: TemplateChild<adw::SwitchRow>,
+        pub(super) fan_mode_row: TemplateChild<adw::SwitchRow>,
      }
 
     //---------------------------------------
@@ -93,27 +93,9 @@ impl MainWindow {
     fn init_kernel_features(&self) {
         let imp = self.imp();
 
-        // Battery
+        // Battery limit
         match kernel_features::battery_limit() {
             Ok(limit) => { imp.battery_limit_row.set_selected(limit); },
-            Err(_) => {}
-        }
-
-        // Fn lock
-        match kernel_features::fn_lock() {
-            Ok(lock) => { imp.fn_lock_row.set_active(lock); },
-            Err(_) => {}
-        }
-
-        // Reader
-        match kernel_features::reader_mode() {
-            Ok(mode) => { imp.reader_mode_row.set_active(mode); },
-            Err(_) => {}
-        }
-
-        // Fan
-        match kernel_features::fan_mode() {
-            Ok(mode) => { imp.fan_mode_row.set_active(mode); },
             Err(_) => {}
         }
 
@@ -123,6 +105,23 @@ impl MainWindow {
             Err(_) => {}
         }
 
+        // Reader mode
+        match kernel_features::reader_mode() {
+            Ok(mode) => { imp.reader_mode_row.set_active(mode); },
+            Err(_) => {}
+        }
+
+        // Fn lock
+        match kernel_features::fn_lock() {
+            Ok(lock) => { imp.fn_lock_row.set_active(lock); },
+            Err(_) => {}
+        }
+
+        // Fan mode
+        match kernel_features::fan_mode() {
+            Ok(mode) => { imp.fan_mode_row.set_active(mode); },
+            Err(_) => {}
+        }
     }
 
     //---------------------------------------
