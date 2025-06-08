@@ -130,6 +130,16 @@ impl MainWindow {
     fn setup_signals(&self) {
         let imp = self.imp();
 
+        // Battery limit
+        imp.battery_limit_row.connect_selected_notify(|row| {
+            let value = if row.selected() == 1 { 80 } else { 100 };
+
+            match kernel_features::set_battery_limit(value) {
+                Ok(_) => {},
+                Err(_) => {}
+            }
+        });
+
         // Fn lock
         imp.fn_lock_row.connect_active_notify(|row| {
             let value = if row.is_active() { 1 } else { 0 };

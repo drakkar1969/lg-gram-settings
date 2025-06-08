@@ -47,12 +47,34 @@ pub mod kernel_features {
     }
 
     //---------------------------------------
-    // Battery limit function
+    // Battery limit functions
     //---------------------------------------
     pub fn battery_limit() -> Result<u32, String> {
         let battery_limit = parse_u32_from_file(BATTERY_PATH)?;
 
         Ok(if battery_limit == 100 { 0 } else { 1 })
+    }
+
+    pub fn set_battery_limit(value: u32) -> Result<std::process::ExitStatus, String> {
+        write_u32_to_file(value, BATTERY_PATH)
+    }
+
+    //---------------------------------------
+    // USB charge function
+    //---------------------------------------
+    pub fn usb_charge() -> Result<bool, String> {
+        let usb_charge = parse_u32_from_file(USB_PATH)?;
+
+        Ok(usb_charge != 0)
+    }
+
+    //---------------------------------------
+    // Reader mode function
+    //---------------------------------------
+    pub fn reader_mode() -> Result<bool, String> {
+        let reader_mode = parse_u32_from_file(READER_PATH)?;
+
+        Ok(reader_mode != 0)
     }
 
     //---------------------------------------
@@ -69,15 +91,6 @@ pub mod kernel_features {
     }
 
     //---------------------------------------
-    // Reader mode function
-    //---------------------------------------
-    pub fn reader_mode() -> Result<bool, String> {
-        let reader_mode = parse_u32_from_file(READER_PATH)?;
-
-        Ok(reader_mode != 0)
-    }
-
-    //---------------------------------------
     // Fan mode function
     //---------------------------------------
     pub fn fan_mode() -> Result<bool, String> {
@@ -85,14 +98,5 @@ pub mod kernel_features {
 
         // Note 0 = silent fan enabled
         Ok(fan_mode == 0)
-    }
-
-    //---------------------------------------
-    // USB charge function
-    //---------------------------------------
-    pub fn usb_charge() -> Result<bool, String> {
-        let usb_charge = parse_u32_from_file(USB_PATH)?;
-
-        Ok(usb_charge != 0)
     }
 }
