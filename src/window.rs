@@ -116,31 +116,31 @@ impl MainWindow {
         // Battery limit
         match kernel_features::battery_limit() {
             Ok(limit) => { imp.battery_limit_row.set_selected(limit); },
-            Err(error) => { self.show_error_dialog(&format!("Failed to load Battery Care Limit\n{error}")); }
+            Err(error) => { self.show_error_dialog(&format!("Failed to load battery care limit\n{error}")); }
         }
 
         // USB charge
         match kernel_features::usb_charge() {
             Ok(charge) => { imp.usb_charge_row.set_active(charge); },
-            Err(error) => { self.show_error_dialog(&format!("Failed to load USB Charge Mode\n{error}")); }
+            Err(error) => { self.show_error_dialog(&format!("Failed to load USB charge mode\n{error}")); }
         }
 
         // Reader mode
         match kernel_features::reader_mode() {
             Ok(mode) => { imp.reader_mode_row.set_active(mode); },
-            Err(error) => { self.show_error_dialog(&format!("Failed to load Reader Mode\n{error}")); }
+            Err(error) => { self.show_error_dialog(&format!("Failed to load reader mode\n{error}")); }
         }
 
         // Fn lock
         match kernel_features::fn_lock() {
             Ok(lock) => { imp.fn_lock_row.set_active(lock); },
-            Err(error) => { self.show_error_dialog(&format!("Failed to load Fn Lock Mode\n{error}")); }
+            Err(error) => { self.show_error_dialog(&format!("Failed to load Fn lock status\n{error}")); }
         }
 
         // Fan mode
         match kernel_features::fan_mode() {
             Ok(mode) => { imp.fan_mode_row.set_active(mode); },
-            Err(error) => { self.show_error_dialog(&format!("Failed to load Silent Fan Mode\n{error}")); }
+            Err(error) => { self.show_error_dialog(&format!("Failed to load fan silent mode\n{error}")); }
         }
     }
 
@@ -168,13 +168,13 @@ impl MainWindow {
                         imp.is_battery_limit_reverting.set(true);
                         row.set_selected(1 - row.selected());
 
-                        window.show_error_dialog(&format!("Failed to change Battery Care Limit\n({status})"));
+                        window.show_error_dialog(&format!("Failed to change battery care limit\n({status})"));
                     },
                     Err(error) => {
                         imp.is_battery_limit_reverting.set(true);
                         row.set_selected(1 - row.selected());
 
-                        window.show_error_dialog(&format!("Failed to change Battery Care Limit\n({error})"));
+                        window.show_error_dialog(&format!("Failed to change battery care limit\n({error})"));
                     },
                     _ => {}
                 }
@@ -199,13 +199,13 @@ impl MainWindow {
                         imp.is_fn_lock_reverting.set(true);
                         row.set_active(!row.is_active());
 
-                        window.show_error_dialog(&format!("Failed to change Fn Lock status\n({status})"));
+                        window.show_error_dialog(&format!("Failed to change Fn lock status\n({status})"));
                     },
                     Err(error) => {
                         imp.is_fn_lock_reverting.set(true);
                         row.set_active(!row.is_active());
 
-                        window.show_error_dialog(&format!("Failed to change Fn Lock status\n({error})"));
+                        window.show_error_dialog(&format!("Failed to change Fn lock status\n({error})"));
                     },
                     _ => {}
                 }
