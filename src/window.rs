@@ -18,15 +18,15 @@ mod imp {
     #[template(resource = "/com/github/LG-GramSettings/ui/window.ui")]
     pub struct MainWindow {
         #[template_child]
-        pub(super) battery_row: TemplateChild<adw::ComboRow>,
+        pub(super) battery_limit_row: TemplateChild<adw::ComboRow>,
         #[template_child]
-        pub(super) fnlock_row: TemplateChild<adw::SwitchRow>,
+        pub(super) fn_lock_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub(super) reader_row: TemplateChild<adw::SwitchRow>,
+        pub(super) reader_mode_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub(super) fan_row: TemplateChild<adw::SwitchRow>,
+        pub(super) fan_mode_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub(super) usb_row: TemplateChild<adw::SwitchRow>,
+        pub(super) usb_charge_row: TemplateChild<adw::SwitchRow>,
      }
 
     //---------------------------------------
@@ -94,31 +94,31 @@ impl MainWindow {
 
         // Battery
         match kernel_features::battery_limit() {
-            Ok(limit) => { imp.battery_row.set_selected(limit); },
+            Ok(limit) => { imp.battery_limit_row.set_selected(limit); },
             Err(_) => {}
         }
 
         // Fn lock
         match kernel_features::fn_lock() {
-            Ok(lock) => { imp.fnlock_row.set_active(lock); },
+            Ok(lock) => { imp.fn_lock_row.set_active(lock); },
             Err(_) => {}
         }
 
         // Reader
         match kernel_features::reader_mode() {
-            Ok(mode) => { imp.reader_row.set_active(mode); },
+            Ok(mode) => { imp.reader_mode_row.set_active(mode); },
             Err(_) => {}
         }
 
         // Fan
         match kernel_features::fan_mode() {
-            Ok(mode) => { imp.fan_row.set_active(mode); },
+            Ok(mode) => { imp.fan_mode_row.set_active(mode); },
             Err(_) => {}
         }
 
         // USB charge
         match kernel_features::usb_charge() {
-            Ok(charge) => { imp.usb_row.set_active(charge); },
+            Ok(charge) => { imp.usb_charge_row.set_active(charge); },
             Err(_) => {}
         }
     }
