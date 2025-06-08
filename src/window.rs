@@ -2,6 +2,7 @@ use std::fs;
 
 use gtk::{gio, glib};
 use adw::subclass::prelude::*;
+use adw::prelude::*;
 
 use crate::Application;
 
@@ -27,7 +28,7 @@ mod imp {
     #[template(resource = "/com/github/LG-GramSettings/ui/window.ui")]
     pub struct MainWindow {
         #[template_child]
-        pub(super) battery_row: TemplateChild<adw::SpinRow>,
+        pub(super) battery_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub(super) fnlock_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
@@ -103,10 +104,11 @@ impl MainWindow {
 
         // Battery
         let battery_limit = fs::read_to_string(BATTERY_PATH).ok()
-            .and_then(|value| value.trim().parse::<f64>().ok())
-            .unwrap_or(100.0);
+            .and_then(|value| value.trim().parse::<u32>().ok())
+            .map(|value| if value == 100 { 0 } else { 1 })
+            .unwrap_or_default();
         
-        imp.battery_row.set_value(battery_limit);
+        imp.battery_row.set_selected(battery_limit);
 
         // Fn lock
         let fn_lock = fs::read_to_string(FNLOCK_PATH).ok()
