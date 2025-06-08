@@ -1,19 +1,9 @@
-use std::fs;
-
 use gtk::{gio, glib};
 use adw::subclass::prelude::*;
 use adw::prelude::*;
 
 use crate::Application;
-
-//------------------------------------------------------------------------------
-// CONSTANTS
-//------------------------------------------------------------------------------
-const BATTERY_PATH: &str = "/sys/devices/platform/lg-laptop/battery_care_limit";
-const FNLOCK_PATH: &str = "/sys/devices/platform/lg-laptop/fn_lock";
-const READER_PATH: &str = "/sys/devices/platform/lg-laptop/reader_mode";
-const FAN_PATH: &str = "/sys/devices/platform/lg-laptop/fan_mode";
-const USB_PATH: &str = "/sys/devices/platform/lg-laptop/usb_charge";
+use crate::kernel_features::kernel_features;
 
 //------------------------------------------------------------------------------
 // MODULE: MainWindow
@@ -103,43 +93,33 @@ impl MainWindow {
         let imp = self.imp();
 
         // Battery
-        let battery_limit = fs::read_to_string(BATTERY_PATH).ok()
-            .and_then(|value| value.trim().parse::<u32>().ok())
-            .map(|value| if value == 100 { 0 } else { 1 })
-            .unwrap_or_default();
-        
-        imp.battery_row.set_selected(battery_limit);
+        match kernel_features::battery_limit() {
+            Ok(limit) => { imp.battery_row.set_selected(limit); },
+            Err(_) => {}
+        }
 
         // Fn lock
-        let fn_lock = fs::read_to_string(FNLOCK_PATH).ok()
-            .and_then(|value| value.trim().parse::<u32>().ok())
-            .map(|value| value != 0)
-            .unwrap_or_default();
-
-        imp.fnlock_row.set_active(fn_lock);
+        match kernel_features::fn_lock() {
+            Ok(lock) => { imp.fnlock_row.set_active(lock); },
+            Err(_) => {}
+        }
 
         // Reader
-        let reader_mode = fs::read_to_string(READER_PATH).ok()
-            .and_then(|value| value.trim().parse::<u32>().ok())
-            .map(|value| value != 0)
-            .unwrap_or_default();
+        match kernel_features::reader_mode() {
+            Ok(mode) => { imp.reader_row.set_active(mode); },
+            Err(_) => {}
+        }
 
-        imp.reader_row.set_active(reader_mode);
-
-        // Fan (note 0 = silent fan enabled)
-        let fan_mode = fs::read_to_string(FAN_PATH).ok()
-            .and_then(|value| value.trim().parse::<u32>().ok())
-            .map(|value| value == 0)
-            .unwrap_or_default();
-
-        imp.fan_row.set_active(fan_mode);
+        // Fan
+        match kernel_features::fan_mode() {
+            Ok(mode) => { imp.fan_row.set_active(mode); },
+            Err(_) => {}
+        }
 
         // USB charge
-        let usb_charge = fs::read_to_string(USB_PATH).ok()
-            .and_then(|value| value.trim().parse::<u32>().ok())
-            .map(|value| value != 0)
-            .unwrap_or_default();
-
-        imp.usb_row.set_active(usb_charge);
+        match kernel_features::usb_charge() {
+            Ok(charge) => { imp.usb_row.set_active(charge); },
+            Err(_) => {}
+        }
     }
 }
