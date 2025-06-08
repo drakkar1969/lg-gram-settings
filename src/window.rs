@@ -94,6 +94,20 @@ impl MainWindow {
     }
 
     //---------------------------------------
+    // Show error dialog helper function
+    //---------------------------------------
+    fn show_error_dialog(&self, error: &str) {
+        let warning_dialog = adw::AlertDialog::builder()
+            .heading("Error")
+            .body(error)
+            .build();
+
+        warning_dialog.add_responses(&[("ok", "_OK")]);
+
+        warning_dialog.present(Some(self));
+    }
+
+    //---------------------------------------
     // Init kernel features
     //---------------------------------------
     fn init_kernel_features(&self) {
@@ -102,31 +116,31 @@ impl MainWindow {
         // Battery limit
         match kernel_features::battery_limit() {
             Ok(limit) => { imp.battery_limit_row.set_selected(limit); },
-            Err(_) => {}
+            Err(error) => { self.show_error_dialog(&format!("Failed to load Battery Care Limit\n{error}")); }
         }
 
         // USB charge
         match kernel_features::usb_charge() {
             Ok(charge) => { imp.usb_charge_row.set_active(charge); },
-            Err(_) => {}
+            Err(error) => { self.show_error_dialog(&format!("Failed to load USB Charge Mode\n{error}")); }
         }
 
         // Reader mode
         match kernel_features::reader_mode() {
             Ok(mode) => { imp.reader_mode_row.set_active(mode); },
-            Err(_) => {}
+            Err(error) => { self.show_error_dialog(&format!("Failed to load Reader Mode\n{error}")); }
         }
 
         // Fn lock
         match kernel_features::fn_lock() {
             Ok(lock) => { imp.fn_lock_row.set_active(lock); },
-            Err(_) => {}
+            Err(error) => { self.show_error_dialog(&format!("Failed to load Fn Lock Mode\n{error}")); }
         }
 
         // Fan mode
         match kernel_features::fan_mode() {
             Ok(mode) => { imp.fan_mode_row.set_active(mode); },
-            Err(_) => {}
+            Err(error) => { self.show_error_dialog(&format!("Failed to load Silent Fan Mode\n{error}")); }
         }
     }
 
@@ -138,8 +152,10 @@ impl MainWindow {
 
         // Battery limit
         imp.battery_limit_row.connect_selected_notify(clone!(
-            #[weak] imp,
+            #[weak(rename_to = window)] self,
             move |row| {
+                let imp = window.imp();
+
                 if imp.is_battery_limit_reverting.get() {
                     imp.is_battery_limit_reverting.set(false);
                     return
@@ -151,10 +167,14 @@ impl MainWindow {
                     Ok(status) if !status.success() => {
                         imp.is_battery_limit_reverting.set(true);
                         row.set_selected(1 - row.selected());
+
+                        window.show_error_dialog(&format!("Failed to change Battery Care Limit\n({status})"));
                     },
-                    Err(_) => {
+                    Err(error) => {
                         imp.is_battery_limit_reverting.set(true);
                         row.set_selected(1 - row.selected());
+
+                        window.show_error_dialog(&format!("Failed to change Battery Care Limit\n({error})"));
                     },
                     _ => {}
                 }
@@ -163,8 +183,10 @@ impl MainWindow {
 
         // Fn lock
         imp.fn_lock_row.connect_active_notify(clone!(
-            #[weak] imp,
+            #[weak(rename_to = window)] self,
             move |row| {
+                let imp = window.imp();
+
                 if imp.is_fn_lock_reverting.get() {
                     imp.is_fn_lock_reverting.set(false);
                     return
@@ -176,10 +198,14 @@ impl MainWindow {
                     Ok(status) if !status.success() => {
                         imp.is_fn_lock_reverting.set(true);
                         row.set_active(!row.is_active());
+
+                        window.show_error_dialog(&format!("Failed to change Fn Lock status\n({status})"));
                     },
-                    Err(_) => {
+                    Err(error) => {
                         imp.is_fn_lock_reverting.set(true);
                         row.set_active(!row.is_active());
+
+                        window.show_error_dialog(&format!("Failed to change Fn Lock status\n({error})"));
                     },
                     _ => {}
                 }
