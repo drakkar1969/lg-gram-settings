@@ -53,7 +53,7 @@ pub mod kernel_features {
     }
 
     //---------------------------------------
-    // USB charge function
+    // USB charge functions
     //---------------------------------------
     pub fn usb_charge() -> Result<bool, String> {
         let usb_charge = parse_u32_from_file(&format!("{}/{}", SETTINGS_PATH, USB_ID))?;
@@ -61,13 +61,21 @@ pub mod kernel_features {
         Ok(usb_charge != 0)
     }
 
+    pub fn set_usb_charge(value: u32) -> Result<std::process::ExitStatus, String> {
+        write_u32_to_file(USB_ID, value)
+    }
+
     //---------------------------------------
-    // Reader mode function
+    // Reader mode functions
     //---------------------------------------
     pub fn reader_mode() -> Result<bool, String> {
         let reader_mode = parse_u32_from_file(&format!("{}/{}", SETTINGS_PATH, READER_ID))?;
 
         Ok(reader_mode != 0)
+    }
+
+    pub fn set_reader_mode(value: u32) -> Result<std::process::ExitStatus, String> {
+        write_u32_to_file(READER_ID, value)
     }
 
     //---------------------------------------
@@ -84,12 +92,16 @@ pub mod kernel_features {
     }
 
     //---------------------------------------
-    // Fan mode function
+    // Fan mode functions
     //---------------------------------------
     pub fn fan_mode() -> Result<bool, String> {
         let fan_mode = parse_u32_from_file(&format!("{}/{}", SETTINGS_PATH, FAN_ID))?;
 
         // Note 0 = silent fan enabled
         Ok(fan_mode == 0)
+    }
+
+    pub fn set_fan_mode(value: u32) -> Result<std::process::ExitStatus, String> {
+        write_u32_to_file(FAN_ID, value)
     }
 }

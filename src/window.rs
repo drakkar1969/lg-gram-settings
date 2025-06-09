@@ -32,7 +32,10 @@ mod imp {
         pub(super) fan_mode_row: TemplateChild<adw::SwitchRow>,
 
         pub(super) is_battery_limit_reverting: Cell<bool>,
+        pub(super) is_usb_charge_reverting: Cell<bool>,
+        pub(super) is_reader_mode_reverting: Cell<bool>,
         pub(super) is_fn_lock_reverting: Cell<bool>,
+        pub(super) is_fan_mode_reverting: Cell<bool>,
      }
 
     //---------------------------------------
@@ -181,6 +184,68 @@ impl MainWindow {
             }
         ));
 
+        // USB charge
+        imp.usb_charge_row.connect_active_notify(clone!(
+            #[weak(rename_to = window)] self,
+            move |row| {
+                let imp = window.imp();
+
+                if imp.is_usb_charge_reverting.get() {
+                    imp.is_usb_charge_reverting.set(false);
+                    return
+                }
+
+                let value = if row.is_active() { 1 } else { 0 };
+
+                match kernel_features::set_usb_charge(value) {
+                    Ok(status) if !status.success() => {
+                        imp.is_usb_charge_reverting.set(true);
+                        row.set_active(!row.is_active());
+
+                        window.show_error_dialog(&format!("Failed to change USB charge mode\n({status})"));
+                    },
+                    Err(error) => {
+                        imp.is_usb_charge_reverting.set(true);
+                        row.set_active(!row.is_active());
+
+                        window.show_error_dialog(&format!("Failed to change USB charge mode\n({error})"));
+                    },
+                    _ => {}
+                }
+            }
+        ));
+
+        // Reader mode
+        imp.reader_mode_row.connect_active_notify(clone!(
+            #[weak(rename_to = window)] self,
+            move |row| {
+                let imp = window.imp();
+
+                if imp.is_reader_mode_reverting.get() {
+                    imp.is_reader_mode_reverting.set(false);
+                    return
+                }
+
+                let value = if row.is_active() { 1 } else { 0 };
+
+                match kernel_features::set_reader_mode(value) {
+                    Ok(status) if !status.success() => {
+                        imp.is_reader_mode_reverting.set(true);
+                        row.set_active(!row.is_active());
+
+                        window.show_error_dialog(&format!("Failed to change reader mode\n({status})"));
+                    },
+                    Err(error) => {
+                        imp.is_reader_mode_reverting.set(true);
+                        row.set_active(!row.is_active());
+
+                        window.show_error_dialog(&format!("Failed to change reader mode\n({error})"));
+                    },
+                    _ => {}
+                }
+            }
+        ));
+
         // Fn lock
         imp.fn_lock_row.connect_active_notify(clone!(
             #[weak(rename_to = window)] self,
@@ -206,6 +271,38 @@ impl MainWindow {
                         row.set_active(!row.is_active());
 
                         window.show_error_dialog(&format!("Failed to change Fn lock status\n({error})"));
+                    },
+                    _ => {}
+                }
+            }
+        ));
+
+        // Fan mode
+        imp.fan_mode_row.connect_active_notify(clone!(
+            #[weak(rename_to = window)] self,
+            move |row| {
+                let imp = window.imp();
+
+                if imp.is_fan_mode_reverting.get() {
+                    imp.is_fan_mode_reverting.set(false);
+                    return
+                }
+
+                // Note 0 = silent fan enabled
+                let value = if row.is_active() { 0 } else { 1 };
+
+                match kernel_features::set_fan_mode(value) {
+                    Ok(status) if !status.success() => {
+                        imp.is_fan_mode_reverting.set(true);
+                        row.set_active(!row.is_active());
+
+                        window.show_error_dialog(&format!("Failed to change fan silent mode\n({status})"));
+                    },
+                    Err(error) => {
+                        imp.is_fan_mode_reverting.set(true);
+                        row.set_active(!row.is_active());
+
+                        window.show_error_dialog(&format!("Failed to change fan silent mode\n({error})"));
                     },
                     _ => {}
                 }
