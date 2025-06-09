@@ -3,17 +3,18 @@
 //------------------------------------------------------------------------------
 pub mod kernel_features {
     use std::fs;
-    use std::process::{Command, ExitStatus, Stdio};
-    use std::io::Write;
+    use std::process::{Command, ExitStatus};
 
     //---------------------------------------
     // Constants
     //---------------------------------------
-    const BATTERY_PATH: &str = "/sys/devices/platform/lg-laptop/battery_care_limit";
-    const FNLOCK_PATH: &str = "/sys/devices/platform/lg-laptop/fn_lock";
-    const READER_PATH: &str = "/sys/devices/platform/lg-laptop/reader_mode";
-    const FAN_PATH: &str = "/sys/devices/platform/lg-laptop/fan_mode";
-    const USB_PATH: &str = "/sys/devices/platform/lg-laptop/usb_charge";
+    const SETTINGS_PATH: &str = "/sys/devices/platform/lg-laptop";
+
+    const BATTERY_ID: &str = "battery_care_limit";
+    const FNLOCK_ID: &str = "fn_lock";
+    const READER_ID: &str = "reader_mode";
+    const FAN_ID: &str = "fan_mode";
+    const USB_ID: &str = "usb_charge";
 
     //---------------------------------------
     // Read/write helper functions
@@ -27,20 +28,12 @@ pub mod kernel_features {
             })
     }
 
-    fn write_u32_to_file(value: u32, file: &str) -> Result<ExitStatus, String> {
+    fn write_u32_to_file(id: &str, value: u32) -> Result<ExitStatus, String> {
         let mut process = Command::new("pkexec")
-            .arg("tee")
-            .arg(file)
-            .stdin(Stdio::piped())
+            .arg("lg-gram-writer")
+            .arg(format!("{id}={value}"))
             .spawn()
             .map_err(|error| error.to_string())?;
-
-        if let Some(mut stdin) = process.stdin.take() {
-            let content = format!("{value}\n");
-
-            stdin.write_all(content.as_bytes())
-                .map_err(|error| error.to_string())?;
-        }
 
         process.wait()
             .map_err(|error| error.to_string())
@@ -50,20 +43,20 @@ pub mod kernel_features {
     // Battery limit functions
     //---------------------------------------
     pub fn battery_limit() -> Result<u32, String> {
-        let battery_limit = parse_u32_from_file(BATTERY_PATH)?;
+        let battery_limit = parse_u32_from_file(&format!("{}/{}", SETTINGS_PATH, BATTERY_ID))?;
 
         Ok(if battery_limit == 100 { 0 } else { 1 })
     }
 
     pub fn set_battery_limit(value: u32) -> Result<std::process::ExitStatus, String> {
-        write_u32_to_file(value, BATTERY_PATH)
+        write_u32_to_file(BATTERY_ID, value)
     }
 
     //---------------------------------------
     // USB charge function
     //---------------------------------------
     pub fn usb_charge() -> Result<bool, String> {
-        let usb_charge = parse_u32_from_file(USB_PATH)?;
+        let usb_charge = parse_u32_from_file(&format!("{}/{}", SETTINGS_PATH, USB_ID))?;
 
         Ok(usb_charge != 0)
     }
@@ -72,7 +65,7 @@ pub mod kernel_features {
     // Reader mode function
     //---------------------------------------
     pub fn reader_mode() -> Result<bool, String> {
-        let reader_mode = parse_u32_from_file(READER_PATH)?;
+        let reader_mode = parse_u32_from_file(&format!("{}/{}", SETTINGS_PATH, READER_ID))?;
 
         Ok(reader_mode != 0)
     }
@@ -81,20 +74,20 @@ pub mod kernel_features {
     // Fn lock functions
     //---------------------------------------
     pub fn fn_lock() -> Result<bool, String> {
-        let fn_lock = parse_u32_from_file(FNLOCK_PATH)?;
+        let fn_lock = parse_u32_from_file(&format!("{}/{}", SETTINGS_PATH, FNLOCK_ID))?;
 
         Ok(fn_lock != 0)
     }
 
     pub fn set_fn_lock(value: u32) -> Result<std::process::ExitStatus, String> {
-        write_u32_to_file(value, FNLOCK_PATH)
+        write_u32_to_file(FNLOCK_ID, value)
     }
 
     //---------------------------------------
     // Fan mode function
     //---------------------------------------
     pub fn fan_mode() -> Result<bool, String> {
-        let fan_mode = parse_u32_from_file(FAN_PATH)?;
+        let fan_mode = parse_u32_from_file(&format!("{}/{}", SETTINGS_PATH, FAN_ID))?;
 
         // Note 0 = silent fan enabled
         Ok(fan_mode == 0)
