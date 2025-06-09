@@ -54,7 +54,7 @@
                                 <child>
                                   <object class="BatteryLimitObject">
                                     <property name="value">80</property>
-                                    <property name="description">Limited charge, reduces battery capacity loss over time</property>
+                                    <property name="description">Limit charge, reduces battery capacity loss over time</property>
                                   </object>
                                 </child>
                               </object>
@@ -129,7 +129,7 @@
                         <child>
                           <object class="AdwSwitchRow" id="reader_mode_row">
                             <property name="title">_Reader Mode</property>
-                            <property name="subtitle">In reader mode the screen colors change (blue color reduced)</property>
+                            <property name="subtitle">Reduce blue light in screen colors</property>
                             <property name="use-underline">true</property>
                             <child type="prefix">
                               <object class="GtkImage">
