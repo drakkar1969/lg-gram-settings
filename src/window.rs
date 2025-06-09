@@ -142,25 +142,47 @@ impl MainWindow {
 
                 imp.battery_limit_row.set_selected(index as u32);
             },
-            Err(error) => { self.show_toast(&format!("Failed to load battery care limit\n{error}")); }
+            Err(error) => {
+                imp.battery_limit_row.set_sensitive(false);
+
+                self.show_toast(&format!("Failed to load battery care limit\n{error}"));
+            }
         }
 
         // USB charge
         match kernel_features::feature(USB_CHARGE) {
-            Ok(charge) => { imp.usb_charge_row.set_active(charge != 0); },
-            Err(error) => { self.show_toast(&format!("Failed to load USB charge mode\n{error}")); }
+            Ok(charge) => {
+                imp.usb_charge_row.set_active(charge != 0);
+            },
+            Err(error) => {
+                imp.usb_charge_row.set_sensitive(false);
+
+                self.show_toast(&format!("Failed to load USB charge mode\n{error}"));
+            }
         }
 
         // Reader mode
         match kernel_features::feature(READER_MODE) {
-            Ok(mode) => { imp.reader_mode_row.set_active(mode != 0); },
-            Err(error) => { self.show_toast(&format!("Failed to load reader mode\n{error}")); }
+            Ok(mode) => {
+                imp.reader_mode_row.set_active(mode != 0);
+            },
+            Err(error) => {
+                imp.reader_mode_row.set_sensitive(false);
+
+                self.show_toast(&format!("Failed to load reader mode\n{error}"));
+            }
         }
 
         // Fn lock
         match kernel_features::feature(FN_LOCK) {
-            Ok(lock) => { imp.fn_lock_row.set_active(lock != 0); },
-            Err(error) => { self.show_toast(&format!("Failed to load Fn lock status\n{error}")); }
+            Ok(lock) => {
+                imp.fn_lock_row.set_active(lock != 0);
+            },
+            Err(error) => {
+                imp.fn_lock_row.set_sensitive(false);
+
+                self.show_toast(&format!("Failed to load Fn lock status\n{error}"));
+            }
         }
     }
 
