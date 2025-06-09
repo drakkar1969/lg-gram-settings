@@ -38,14 +38,33 @@
                     <child>
                       <object class="AdwComboRow" id="battery_limit_row">
                         <property name="title">_Battery Care Limit</property>
-                        <property name="subtitle">Maximum capacity to charge the battery (limiting the charge reduces battery capacity loss over time)</property>
+                        <property name="subtitle">Maximum capacity to charge the battery</property>
                         <property name="use-underline">true</property>
                         <property name="model">
-                          <object class="GtkStringList">
-                            <items>
-                              <item>100%</item>
-                              <item>80%</item>
-                            </items>
+                          <object class="GListStore" id="battery_limit_model">
+                            <property name="item-type">BatteryLimitObject</property>
+                            <child>
+                              <object class="BatteryLimitObject">
+                                <property name="value">100</property>
+                                <property name="description">No charge limit</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="BatteryLimitObject">
+                                <property name="value">80</property>
+                                <property name="description">Limited charge, reduces battery capacity loss over time</property>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                        <property name="factory">
+                          <object class="GtkBuilderListItemFactory">
+                            <property name="resource">/com/github/LG-GramSettings/ui/battery_limit_combo/entry-item.ui</property>
+                          </object>
+                        </property>
+                        <property name="list-factory">
+                          <object class="GtkBuilderListItemFactory">
+                            <property name="resource">/com/github/LG-GramSettings/ui/battery_limit_combo/list-item.ui</property>
                           </object>
                         </property>
                         <child type="prefix">

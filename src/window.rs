@@ -7,6 +7,7 @@ use glib::clone;
 
 use crate::Application;
 use crate::modules::kernel_features;
+use crate::battery_limit_object::BatteryLimitObject;
 
 //------------------------------------------------------------------------------
 // CONSTANTS
@@ -31,6 +32,8 @@ mod imp {
         #[template_child]
         pub(super) battery_limit_row: TemplateChild<adw::ComboRow>,
         #[template_child]
+        pub(super) battery_limit_model: TemplateChild<gio::ListStore>,
+        #[template_child]
         pub(super) usb_charge_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub(super) reader_mode_row: TemplateChild<adw::SwitchRow>,
@@ -53,6 +56,8 @@ mod imp {
         type ParentType = adw::ApplicationWindow;
 
         fn class_init(klass: &mut Self::Class) {
+            BatteryLimitObject::ensure_type();
+
             klass.bind_template();
         }
 
@@ -123,7 +128,14 @@ impl MainWindow {
 
         // Battery limit
         match kernel_features::feature(BATTERY_LIMIT) {
-            Ok(limit) => { imp.battery_limit_row.set_selected(if limit == 100 { 0 } else { 1 }); },
+            Ok(limit) => {
+                let index = imp.battery_limit_model.iter::<BatteryLimitObject>()
+                    .flatten()
+                    .position(|item| item.value() == limit)
+                    .unwrap_or_default();
+
+                imp.battery_limit_row.set_selected(index as u32);
+            },
             Err(error) => { self.show_error_dialog(&format!("Failed to load battery care limit\n{error}")); }
         }
 
@@ -163,7 +175,10 @@ impl MainWindow {
                     return
                 }
 
-                let value = if row.selected() == 1 { 80 } else { 100 };
+                let value = row.selected_item()
+                    .and_downcast_ref::<BatteryLimitObject>()
+                    .expect("Failed to downcast to 'BatteryLimitObject'")
+                    .value();
 
                 match kernel_features::set_feature(BATTERY_LIMIT,value) {
                     Ok(status) if !status.success() => {

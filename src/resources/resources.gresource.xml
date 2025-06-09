@@ -9,6 +9,8 @@
     <file alias="gram-usb-symbolic.svg">icons/gram-usb-symbolic.svg</file>
   </gresource>
   <gresource prefix="/com/github/LG-GramSettings/">
+    <file compressed="true" preprocess="xml-stripblanks">ui/battery_limit_combo/entry-item.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/battery_limit_combo/list-item.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/window.ui</file>
   </gresource>
 </gresources>

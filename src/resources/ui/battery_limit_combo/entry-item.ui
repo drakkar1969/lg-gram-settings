@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="GtkListItem">
+    <property name="child">
+      <object class="GtkLabel">
+        <binding name="label">
+          <lookup name="label" type="BatteryLimitObject">
+            <lookup name="item">GtkListItem</lookup>
+          </lookup>
+        </binding>
+        <property name="xalign">0</property>
+        <attributes>
+          <attribute name="weight" value="PANGO_WEIGHT_BOLD"/>
+        </attributes>
+      </object>
+    </property>
+  </template>
+</interface>

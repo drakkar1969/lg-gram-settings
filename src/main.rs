@@ -1,6 +1,7 @@
 mod app;
 mod window;
 mod modules;
+mod battery_limit_object;
 
 use gtk::{gio, glib};
 use gtk::prelude::*;
