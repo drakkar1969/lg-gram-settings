@@ -3,7 +3,7 @@
   <!--// MainWindow template //-->
   <template class="MainWindow" parent="AdwApplicationWindow">
     <property name="default-width">600</property>
-    <property name="default-height">800</property>
+    <property name="default-height">740</property>
     <property name="title">LG Gram Settings</property>
     <property name="content">
       <object class="AdwToolbarView">
@@ -143,18 +143,6 @@
                         <child type="prefix">
                           <object class="GtkImage">
                             <property name="icon-name">gram-fnlock-symbolic</property>
-                            <property name="pixel-size">24</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="AdwSwitchRow" id="fan_mode_row">
-                        <property name="title">_Fan Silent Mode</property>
-                        <property name="use-underline">true</property>
-                        <child type="prefix">
-                          <object class="GtkImage">
-                            <property name="icon-name">gram-fan-symbolic</property>
                             <property name="pixel-size">24</property>
                           </object>
                         </child>

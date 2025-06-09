@@ -13,7 +13,6 @@ pub mod kernel_features {
     const BATTERY_ID: &str = "battery_care_limit";
     const FNLOCK_ID: &str = "fn_lock";
     const READER_ID: &str = "reader_mode";
-    const FAN_ID: &str = "fan_mode";
     const USB_ID: &str = "usb_charge";
 
     //---------------------------------------
@@ -89,19 +88,5 @@ pub mod kernel_features {
 
     pub fn set_fn_lock(value: u32) -> Result<std::process::ExitStatus, String> {
         write_u32_to_file(FNLOCK_ID, value)
-    }
-
-    //---------------------------------------
-    // Fan mode functions
-    //---------------------------------------
-    pub fn fan_mode() -> Result<bool, String> {
-        let fan_mode = parse_u32_from_file(&format!("{}/{}", SETTINGS_PATH, FAN_ID))?;
-
-        // Note 0 = silent fan enabled
-        Ok(fan_mode == 0)
-    }
-
-    pub fn set_fan_mode(value: u32) -> Result<std::process::ExitStatus, String> {
-        write_u32_to_file(FAN_ID, value)
     }
 }
