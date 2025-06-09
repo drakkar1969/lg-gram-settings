@@ -115,25 +115,25 @@ impl MainWindow {
 
         // Battery limit
         match kernel_features::battery_limit() {
-            Ok(limit) => { imp.battery_limit_row.set_selected(limit); },
+            Ok(limit) => { imp.battery_limit_row.set_selected(if limit == 100 { 0 } else { 1 }); },
             Err(error) => { self.show_error_dialog(&format!("Failed to load battery care limit\n{error}")); }
         }
 
         // USB charge
         match kernel_features::usb_charge() {
-            Ok(charge) => { imp.usb_charge_row.set_active(charge); },
+            Ok(charge) => { imp.usb_charge_row.set_active(charge != 0); },
             Err(error) => { self.show_error_dialog(&format!("Failed to load USB charge mode\n{error}")); }
         }
 
         // Reader mode
         match kernel_features::reader_mode() {
-            Ok(mode) => { imp.reader_mode_row.set_active(mode); },
+            Ok(mode) => { imp.reader_mode_row.set_active(mode != 0); },
             Err(error) => { self.show_error_dialog(&format!("Failed to load reader mode\n{error}")); }
         }
 
         // Fn lock
         match kernel_features::fn_lock() {
-            Ok(lock) => { imp.fn_lock_row.set_active(lock); },
+            Ok(lock) => { imp.fn_lock_row.set_active(lock != 0); },
             Err(error) => { self.show_error_dialog(&format!("Failed to load Fn lock status\n{error}")); }
         }
     }

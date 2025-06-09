@@ -42,9 +42,7 @@ pub mod kernel_features {
     // Battery limit functions
     //---------------------------------------
     pub fn battery_limit() -> Result<u32, String> {
-        let battery_limit = parse_u32_from_file(&format!("{}/{}", SETTINGS_PATH, BATTERY_ID))?;
-
-        Ok(if battery_limit == 100 { 0 } else { 1 })
+        parse_u32_from_file(&format!("{}/{}", SETTINGS_PATH, BATTERY_ID))
     }
 
     pub fn set_battery_limit(value: u32) -> Result<std::process::ExitStatus, String> {
@@ -54,10 +52,8 @@ pub mod kernel_features {
     //---------------------------------------
     // USB charge functions
     //---------------------------------------
-    pub fn usb_charge() -> Result<bool, String> {
-        let usb_charge = parse_u32_from_file(&format!("{}/{}", SETTINGS_PATH, USB_ID))?;
-
-        Ok(usb_charge != 0)
+    pub fn usb_charge() -> Result<u32, String> {
+        parse_u32_from_file(&format!("{}/{}", SETTINGS_PATH, USB_ID))
     }
 
     pub fn set_usb_charge(value: u32) -> Result<std::process::ExitStatus, String> {
@@ -67,10 +63,8 @@ pub mod kernel_features {
     //---------------------------------------
     // Reader mode functions
     //---------------------------------------
-    pub fn reader_mode() -> Result<bool, String> {
-        let reader_mode = parse_u32_from_file(&format!("{}/{}", SETTINGS_PATH, READER_ID))?;
-
-        Ok(reader_mode != 0)
+    pub fn reader_mode() -> Result<u32, String> {
+        parse_u32_from_file(&format!("{}/{}", SETTINGS_PATH, READER_ID))
     }
 
     pub fn set_reader_mode(value: u32) -> Result<std::process::ExitStatus, String> {
@@ -80,10 +74,8 @@ pub mod kernel_features {
     //---------------------------------------
     // Fn lock functions
     //---------------------------------------
-    pub fn fn_lock() -> Result<bool, String> {
-        let fn_lock = parse_u32_from_file(&format!("{}/{}", SETTINGS_PATH, FNLOCK_ID))?;
-
-        Ok(fn_lock != 0)
+    pub fn fn_lock() -> Result<u32, String> {
+        parse_u32_from_file(&format!("{}/{}", SETTINGS_PATH, FNLOCK_ID))
     }
 
     pub fn set_fn_lock(value: u32) -> Result<std::process::ExitStatus, String> {
