@@ -1,6 +1,7 @@
 use std::env;
 use std::process;
 use std::fs;
+use std::path::Path;
 
 use nix;
 
@@ -66,19 +67,27 @@ fn validate_args(args: &[String]) -> Result<(String, String), ()> {
     }
 }
 
-fn eprint_usage(app: &str) {
+fn eprint_usage(app_path: &str) {
+    let app_name = Path::new(app_path)
+        .file_name()
+        .unwrap_or_default()
+        .to_string_lossy();
+
     eprintln!(
         "\n\
         USAGE:\n\
         \n\
-        {} <setting>=<value>\n\
+        \u{20}  {app_name} setting=value\n\
         \n\
-        where <setting> is one of:\n\
+        Where 'setting' is one of:\n\
         \n\
-        battery_care_limit: <value>=80/100\n\
-        usb_charge: <value>=0/1\n\
-        reader_mode: <value>=0/1\n\
-        fn_lock: <value>=0/1\n",
-        app
+        \u{20}  battery_care_limit:  value = 80/100\n\
+        \u{20}  usb_charge:          value = 0/1\n\
+        \u{20}  reader_mode:         value = 0/1\n\
+        \u{20}  fn_lock:             value = 0/1\n\
+        \n\
+        Example:\n\
+        \n\
+        \u{20}  {app_name} fn_lock=1\n"
     );
 }
