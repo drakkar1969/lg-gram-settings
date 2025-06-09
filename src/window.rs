@@ -9,6 +9,14 @@ use crate::Application;
 use crate::modules::kernel_features;
 
 //------------------------------------------------------------------------------
+// CONSTANTS
+//------------------------------------------------------------------------------
+const BATTERY_LIMIT: &str = "battery_care_limit";
+const FN_LOCK: &str = "fn_lock";
+const READER_MODE: &str = "reader_mode";
+const USB_CHARGE: &str = "usb_charge";
+
+//------------------------------------------------------------------------------
 // MODULE: MainWindow
 //------------------------------------------------------------------------------
 mod imp {
@@ -114,25 +122,25 @@ impl MainWindow {
         let imp = self.imp();
 
         // Battery limit
-        match kernel_features::battery_limit() {
+        match kernel_features::feature(BATTERY_LIMIT) {
             Ok(limit) => { imp.battery_limit_row.set_selected(if limit == 100 { 0 } else { 1 }); },
             Err(error) => { self.show_error_dialog(&format!("Failed to load battery care limit\n{error}")); }
         }
 
         // USB charge
-        match kernel_features::usb_charge() {
+        match kernel_features::feature(USB_CHARGE) {
             Ok(charge) => { imp.usb_charge_row.set_active(charge != 0); },
             Err(error) => { self.show_error_dialog(&format!("Failed to load USB charge mode\n{error}")); }
         }
 
         // Reader mode
-        match kernel_features::reader_mode() {
+        match kernel_features::feature(READER_MODE) {
             Ok(mode) => { imp.reader_mode_row.set_active(mode != 0); },
             Err(error) => { self.show_error_dialog(&format!("Failed to load reader mode\n{error}")); }
         }
 
         // Fn lock
-        match kernel_features::fn_lock() {
+        match kernel_features::feature(FN_LOCK) {
             Ok(lock) => { imp.fn_lock_row.set_active(lock != 0); },
             Err(error) => { self.show_error_dialog(&format!("Failed to load Fn lock status\n{error}")); }
         }
@@ -157,7 +165,7 @@ impl MainWindow {
 
                 let value = if row.selected() == 1 { 80 } else { 100 };
 
-                match kernel_features::set_battery_limit(value) {
+                match kernel_features::set_feature(BATTERY_LIMIT,value) {
                     Ok(status) if !status.success() => {
                         imp.is_battery_limit_reverting.set(true);
                         row.set_selected(1 - row.selected());
@@ -188,7 +196,7 @@ impl MainWindow {
 
                 let value = if row.is_active() { 1 } else { 0 };
 
-                match kernel_features::set_usb_charge(value) {
+                match kernel_features::set_feature(USB_CHARGE, value) {
                     Ok(status) if !status.success() => {
                         imp.is_usb_charge_reverting.set(true);
                         row.set_active(!row.is_active());
@@ -219,7 +227,7 @@ impl MainWindow {
 
                 let value = if row.is_active() { 1 } else { 0 };
 
-                match kernel_features::set_reader_mode(value) {
+                match kernel_features::set_feature(READER_MODE, value) {
                     Ok(status) if !status.success() => {
                         imp.is_reader_mode_reverting.set(true);
                         row.set_active(!row.is_active());
@@ -250,7 +258,7 @@ impl MainWindow {
 
                 let value = if row.is_active() { 1 } else { 0 };
 
-                match kernel_features::set_fn_lock(value) {
+                match kernel_features::set_feature(FN_LOCK, value) {
                     Ok(status) if !status.success() => {
                         imp.is_fn_lock_reverting.set(true);
                         row.set_active(!row.is_active());
