@@ -3,7 +3,7 @@
 //------------------------------------------------------------------------------
 pub mod kernel_features {
     use std::fs;
-    use std::process::{Command, ExitStatus};
+    use std::process::Command;
 
     //---------------------------------------
     // Constants
@@ -27,14 +27,17 @@ pub mod kernel_features {
     //---------------------------------------
     // Set feature function
     //---------------------------------------
-    pub fn set_feature(id: &str, value: u32) -> Result<ExitStatus, String> {
-        let mut process = Command::new("pkexec")
+    pub fn set_feature(id: &str, value: u32) -> Result<String, String> {
+        let output = Command::new("pkexec")
             .arg("lg-gram-writer")
             .arg(format!("{id}={value}"))
-            .spawn()
+            .output()
             .map_err(|error| error.to_string())?;
 
-        process.wait()
-            .map_err(|error| error.to_string())
+        if !output.status.success() {
+            return Err(String::from_utf8_lossy(&output.stderr).into())
+        }
+
+        Ok(String::from_utf8_lossy(&output.stdout).into())
     }
 }

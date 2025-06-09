@@ -30,6 +30,9 @@ mod imp {
     #[template(resource = "/com/github/LG-GramSettings/ui/window.ui")]
     pub struct MainWindow {
         #[template_child]
+        pub(super) toast_overlay: TemplateChild<adw::ToastOverlay>,
+
+        #[template_child]
         pub(super) battery_limit_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub(super) battery_limit_model: TemplateChild<gio::ListStore>,
@@ -107,17 +110,20 @@ impl MainWindow {
     }
 
     //---------------------------------------
-    // Show error dialog helper function
+    // Show toast helper function
     //---------------------------------------
-    fn show_error_dialog(&self, error: &str) {
-        let warning_dialog = adw::AlertDialog::builder()
-            .heading("Error")
-            .body(error)
+    fn show_toast(&self, error: &str) {
+        let label = gtk::Label::builder()
+            .label(error.trim())
+            .css_classes(["heading", "warning"])
             .build();
 
-        warning_dialog.add_responses(&[("ok", "_OK")]);
+        let toast = adw::Toast::builder()
+            .priority(adw::ToastPriority::High)
+            .custom_title(&label)
+            .build();
 
-        warning_dialog.present(Some(self));
+        self.imp().toast_overlay.add_toast(toast);
     }
 
     //---------------------------------------
@@ -136,25 +142,25 @@ impl MainWindow {
 
                 imp.battery_limit_row.set_selected(index as u32);
             },
-            Err(error) => { self.show_error_dialog(&format!("Failed to load battery care limit\n{error}")); }
+            Err(error) => { self.show_toast(&format!("Failed to load battery care limit\n{error}")); }
         }
 
         // USB charge
         match kernel_features::feature(USB_CHARGE) {
             Ok(charge) => { imp.usb_charge_row.set_active(charge != 0); },
-            Err(error) => { self.show_error_dialog(&format!("Failed to load USB charge mode\n{error}")); }
+            Err(error) => { self.show_toast(&format!("Failed to load USB charge mode\n{error}")); }
         }
 
         // Reader mode
         match kernel_features::feature(READER_MODE) {
             Ok(mode) => { imp.reader_mode_row.set_active(mode != 0); },
-            Err(error) => { self.show_error_dialog(&format!("Failed to load reader mode\n{error}")); }
+            Err(error) => { self.show_toast(&format!("Failed to load reader mode\n{error}")); }
         }
 
         // Fn lock
         match kernel_features::feature(FN_LOCK) {
             Ok(lock) => { imp.fn_lock_row.set_active(lock != 0); },
-            Err(error) => { self.show_error_dialog(&format!("Failed to load Fn lock status\n{error}")); }
+            Err(error) => { self.show_toast(&format!("Failed to load Fn lock status\n{error}")); }
         }
     }
 
@@ -180,20 +186,11 @@ impl MainWindow {
                     .expect("Failed to downcast to 'BatteryLimitObject'")
                     .value();
 
-                match kernel_features::set_feature(BATTERY_LIMIT,value) {
-                    Ok(status) if !status.success() => {
-                        imp.is_battery_limit_reverting.set(true);
-                        row.set_selected(1 - row.selected());
+                if let Err(error) = kernel_features::set_feature(BATTERY_LIMIT, value) {
+                    imp.is_battery_limit_reverting.set(true);
+                    row.set_selected(1 - row.selected());
 
-                        window.show_error_dialog(&format!("Failed to change battery care limit\n({status})"));
-                    },
-                    Err(error) => {
-                        imp.is_battery_limit_reverting.set(true);
-                        row.set_selected(1 - row.selected());
-
-                        window.show_error_dialog(&format!("Failed to change battery care limit\n({error})"));
-                    },
-                    _ => {}
+                    window.show_toast(&error);
                 }
             }
         ));
@@ -211,20 +208,11 @@ impl MainWindow {
 
                 let value = if row.is_active() { 1 } else { 0 };
 
-                match kernel_features::set_feature(USB_CHARGE, value) {
-                    Ok(status) if !status.success() => {
-                        imp.is_usb_charge_reverting.set(true);
-                        row.set_active(!row.is_active());
+                if let Err(error) = kernel_features::set_feature(USB_CHARGE, value) {
+                    imp.is_usb_charge_reverting.set(true);
+                    row.set_active(!row.is_active());
 
-                        window.show_error_dialog(&format!("Failed to change USB charge mode\n({status})"));
-                    },
-                    Err(error) => {
-                        imp.is_usb_charge_reverting.set(true);
-                        row.set_active(!row.is_active());
-
-                        window.show_error_dialog(&format!("Failed to change USB charge mode\n({error})"));
-                    },
-                    _ => {}
+                    window.show_toast(&error);
                 }
             }
         ));
@@ -242,20 +230,11 @@ impl MainWindow {
 
                 let value = if row.is_active() { 1 } else { 0 };
 
-                match kernel_features::set_feature(READER_MODE, value) {
-                    Ok(status) if !status.success() => {
-                        imp.is_reader_mode_reverting.set(true);
-                        row.set_active(!row.is_active());
+                if let Err(error) = kernel_features::set_feature(READER_MODE, value) {
+                    imp.is_reader_mode_reverting.set(true);
+                    row.set_active(!row.is_active());
 
-                        window.show_error_dialog(&format!("Failed to change reader mode\n({status})"));
-                    },
-                    Err(error) => {
-                        imp.is_reader_mode_reverting.set(true);
-                        row.set_active(!row.is_active());
-
-                        window.show_error_dialog(&format!("Failed to change reader mode\n({error})"));
-                    },
-                    _ => {}
+                    window.show_toast(&error);
                 }
             }
         ));
@@ -273,20 +252,11 @@ impl MainWindow {
 
                 let value = if row.is_active() { 1 } else { 0 };
 
-                match kernel_features::set_feature(FN_LOCK, value) {
-                    Ok(status) if !status.success() => {
-                        imp.is_fn_lock_reverting.set(true);
-                        row.set_active(!row.is_active());
+                if let Err(error) = kernel_features::set_feature(FN_LOCK, value) {
+                    imp.is_fn_lock_reverting.set(true);
+                    row.set_active(!row.is_active());
 
-                        window.show_error_dialog(&format!("Failed to change Fn lock status\n({status})"));
-                    },
-                    Err(error) => {
-                        imp.is_fn_lock_reverting.set(true);
-                        row.set_active(!row.is_active());
-
-                        window.show_error_dialog(&format!("Failed to change Fn lock status\n({error})"));
-                    },
-                    _ => {}
+                    window.show_toast(&error);
                 }
             }
         ));
