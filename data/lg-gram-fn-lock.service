@@ -1,0 +1,11 @@
+[Unit]
+Description=Set Fn lock for LG GRAM
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/bin/sh -c 'echo "1" | tee /sys/devices/platform/lg-laptop/fn_lock'
+
+[Install]
+WantedBy=multi-user.target
