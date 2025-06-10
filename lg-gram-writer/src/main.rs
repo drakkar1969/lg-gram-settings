@@ -73,21 +73,5 @@ fn eprint_usage(app_path: &str) {
         .unwrap_or_default()
         .to_string_lossy();
 
-    eprintln!(
-        "\n\
-        USAGE:\n\
-        \n\
-        \u{20}  {app_name} setting=value\n\
-        \n\
-        Where 'setting' is one of:\n\
-        \n\
-        \u{20}  battery_care_limit:  value = 80/100\n\
-        \u{20}  usb_charge:          value = 0/1\n\
-        \u{20}  reader_mode:         value = 0/1\n\
-        \u{20}  fn_lock:             value = 0/1\n\
-        \n\
-        Example:\n\
-        \n\
-        \u{20}  {app_name} fn_lock=1\n"
-    );
+    eprintln!("USAGE:   {app_name} setting=value");
 }
