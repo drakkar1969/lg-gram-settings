@@ -215,7 +215,7 @@ impl MainWindow {
                     return
                 }
 
-                let value = if row.is_active() { 1 } else { 0 };
+                let value = u32::from(row.is_active());
 
                 if let Err(error) = gram::set_feature(FN_LOCK, value) {
                     imp.is_fn_lock_reverting.set(true);
@@ -262,7 +262,7 @@ impl MainWindow {
                     return
                 }
 
-                let value = if row.is_active() { 1 } else { 0 };
+                let value = u32::from(row.is_active());
 
                 if let Err(error) = gram::set_feature(USB_CHARGE, value) {
                     imp.is_usb_charge_reverting.set(true);
@@ -284,7 +284,7 @@ impl MainWindow {
                     return
                 }
 
-                let value = if row.is_active() { 1 } else { 0 };
+                let value = u32::from(row.is_active());
 
                 if let Err(error) = gram::set_feature(READER_MODE, value) {
                     imp.is_reader_mode_reverting.set(true);

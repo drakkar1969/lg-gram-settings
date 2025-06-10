@@ -14,7 +14,7 @@ pub mod gram {
     // Feature function
     //---------------------------------------
     pub fn feature(id: &str) -> Result<u32, String> {
-        let file = format!("{}/{}", SETTINGS_PATH, id);
+        let file = format!("{SETTINGS_PATH}/{id}");
 
         fs::read_to_string(file)
             .map_err(|error| error.to_string())
