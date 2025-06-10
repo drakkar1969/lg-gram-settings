@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <policyconfig>
-  <action id="com.lg.gram.writer.execute">
+  <action id="lg.gram.writer.execute">
     <description>Run LG Gram Writer Utility</description>
-    <message>Authentication is required to modify LG Gram kernel features.</message>
+    <message>Authentication is required to modify LG Gram settings</message>
     <defaults>
       <allow_any>auth_admin_keep</allow_any>
       <allow_inactive>auth_admin_keep</allow_inactive>

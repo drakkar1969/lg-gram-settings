@@ -1,5 +1,5 @@
 [Unit]
-Description=Set Fn lock for LG GRAM
+Description=Set Fn lock for LG Gram
 After=network.target
 
 [Service]
