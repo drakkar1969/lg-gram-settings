@@ -30,6 +30,7 @@ pub mod kernel_features {
     pub fn set_feature(id: &str, value: u32) -> Result<String, String> {
         let output = Command::new("pkexec")
             .arg("lg-gram-writer")
+            .arg("--kernel")
             .arg(format!("{id}={value}"))
             .output()
             .map_err(|error| error.to_string())?;

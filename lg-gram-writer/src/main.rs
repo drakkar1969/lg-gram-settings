@@ -15,51 +15,67 @@ fn main() {
     // Validate args
     let args: Vec<String> = env::args().collect();
 
-    let Ok((setting, value)) = validate_args(&args) else {
+    let Ok((mode, setting, value)) = validate_args(&args) else {
         eprint_usage(&args[0]);
         process::exit(1);
     };
 
-    // Check if settings file exists
-    let file = format!("/sys/devices/platform/lg-laptop/{}", setting);
+    // Check mode
+    let result = match mode.as_str() {
+        "--kernel" => set_kernel_feature(&setting, &value),
+        _ => unreachable!()
+    };
 
-    if fs::metadata(&file).is_err() {
-        eprintln!("ERROR: Settings file does not exist");
-        process::exit(1);
-    }
-
-    // Write to settings file
-    let content = format!("{}\n", value);
-
-    if fs::write(file, content).is_err() {
-        eprintln!("ERROR: Error writing to settings file");
+    // Exit if error
+    if let Err(error) = result {
+        eprintln!("{error}");
         process::exit(1);
     }
 
     println!("Successfully changed {} setting", setting);
 }
 
-fn validate_args(args: &[String]) -> Result<(String, String), ()> {
-    if args.len() != 2 {
+fn set_kernel_feature(setting: &str, value: &str) -> Result<(), String> {
+    // Check if settings file exists
+    let file = format!("/sys/devices/platform/lg-laptop/{}", setting);
+
+    fs::metadata(&file)
+        .map_err(|_| String::from("ERROR: Settings file does not exist"))?;
+
+    // Write to settings file
+    let content = format!("{}\n", value);
+
+    fs::write(file, content)
+        .map_err(|_| String::from("ERROR: Error writing to settings file"))
+}
+
+fn validate_args(args: &[String]) -> Result<(String, String, String), ()> {
+    if args.len() != 3 {
         return Err(());
     }
 
-    let Some((setting, value)) = args[1].split_once("=") else {
+    let mode = args[1].clone();
+
+    if mode != "--kernel" && mode != "--service" {
+        return Err(());
+    }
+
+    let Some((setting, value)) = args[2].split_once("=") else {
         return Err(());
     };
 
     match (setting, value) {
         ("battery_care_limit", value) if ["80", "100"].contains(&value) => {
-            Ok((String::from(setting), String::from(value)))
+            Ok((mode, String::from(setting), String::from(value)))
         },
         ("usb_charge", value) if ["0", "1"].contains(&value) => {
-            Ok((String::from(setting), String::from(value)))
+            Ok((mode, String::from(setting), String::from(value)))
         },
         ("reader_mode", value) if ["0", "1"].contains(&value) => {
-            Ok((String::from(setting), String::from(value)))
+            Ok((mode, String::from(setting), String::from(value)))
         },
         ("fn_lock", value) if ["0", "1"].contains(&value) => {
-            Ok((String::from(setting), String::from(value)))
+            Ok((mode, String::from(setting), String::from(value)))
         },
         _ => {
             Err(())
@@ -73,5 +89,5 @@ fn eprint_usage(app_path: &str) {
         .unwrap_or_default()
         .to_string_lossy();
 
-    eprintln!("USAGE:   {app_name} setting=value");
+    eprintln!("ERROR: USAGE: {app_name} mode setting=value");
 }
