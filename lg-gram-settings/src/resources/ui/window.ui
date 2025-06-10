@@ -3,7 +3,7 @@
   <!--// MainWindow template //-->
   <template class="MainWindow" parent="AdwApplicationWindow">
     <property name="default-width">600</property>
-    <property name="default-height">720</property>
+    <property name="default-height">775</property>
     <property name="title">LG Gram Settings</property>
     <property name="content">
       <object class="AdwToastOverlay" id="toast_overlay">
@@ -34,6 +34,35 @@
                     <property name="margin-top">12</property>
                     <property name="margin-bottom">24</property>
                     <property name="spacing">30</property>
+                    <child>
+                      <object class="AdwPreferencesGroup">
+                        <property name="title">Keyboard</property>
+                        <child>
+                          <object class="AdwSwitchRow" id="fn_lock_row">
+                            <property name="title">Fn _Lock</property>
+                            <property name="use-underline">true</property>
+                            <child type="prefix">
+                              <object class="GtkImage">
+                                <property name="icon-name">gram-fnlock-symbolic</property>
+                                <property name="pixel-size">24</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwSwitchRow" id="fn_persistent_row">
+                            <property name="title">Persistent</property>
+                            <property name="subtitle">Make setting persistent across reboots (requires systemd service)</property>
+                            <property name="use-underline">true</property>
+                            <child type="prefix">
+                              <object class="GtkImage">
+                                <property name="pixel-size">24</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                     <child>
                       <object class="AdwPreferencesGroup">
                         <property name="title">Battery</property>
@@ -79,12 +108,11 @@
                         </child>
                         <child>
                           <object class="AdwSwitchRow" id="battery_persistent_row">
-                            <property name="title">_Persistent</property>
+                            <property name="title">Persistent</property>
                             <property name="subtitle">Make setting persistent across reboots (requires systemd service)</property>
                             <property name="use-underline">true</property>
                             <child type="prefix">
                               <object class="GtkImage">
-                                <property name="icon-name">gram-service-symbolic</property>
                                 <property name="pixel-size">24</property>
                               </object>
                             </child>
@@ -110,12 +138,11 @@
                         </child>
                         <child>
                           <object class="AdwSwitchRow" id="usb_persistent_row">
-                            <property name="title">Persisten_t</property>
+                            <property name="title">Persistent</property>
                             <property name="subtitle">Make setting persistent across reboots (requires systemd service)</property>
                             <property name="use-underline">true</property>
                             <child type="prefix">
                               <object class="GtkImage">
-                                <property name="icon-name">gram-service-symbolic</property>
                                 <property name="pixel-size">24</property>
                               </object>
                             </child>
@@ -140,30 +167,12 @@
                           </object>
                         </child>
                         <child>
-                          <object class="AdwSwitchRow" id="reader_key_row">
-                            <property name="title">_Keyboard Shortcut</property>
-                            <property name="subtitle">Enable Fn+F9 global shortcut to toggle mode</property>
+                          <object class="AdwSwitchRow" id="reader_persistent_row">
+                            <property name="title">Persistent</property>
+                            <property name="subtitle">Make setting persistent across reboots (requires systemd service)</property>
                             <property name="use-underline">true</property>
                             <child type="prefix">
                               <object class="GtkImage">
-                                <property name="icon-name">gram-keyboard-symbolic</property>
-                                <property name="pixel-size">24</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="AdwPreferencesGroup">
-                        <property name="title">Other Features</property>
-                        <child>
-                          <object class="AdwSwitchRow" id="fn_lock_row">
-                            <property name="title">Fn _Lock</property>
-                            <property name="use-underline">true</property>
-                            <child type="prefix">
-                              <object class="GtkImage">
-                                <property name="icon-name">gram-fnlock-symbolic</property>
                                 <property name="pixel-size">24</property>
                               </object>
                             </child>

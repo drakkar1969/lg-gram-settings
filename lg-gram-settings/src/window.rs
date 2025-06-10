@@ -33,6 +33,8 @@ mod imp {
         pub(super) toast_overlay: TemplateChild<adw::ToastOverlay>,
 
         #[template_child]
+        pub(super) fn_lock_row: TemplateChild<adw::SwitchRow>,
+        #[template_child]
         pub(super) battery_limit_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub(super) battery_limit_model: TemplateChild<gio::ListStore>,
@@ -40,13 +42,11 @@ mod imp {
         pub(super) usb_charge_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub(super) reader_mode_row: TemplateChild<adw::SwitchRow>,
-        #[template_child]
-        pub(super) fn_lock_row: TemplateChild<adw::SwitchRow>,
 
+        pub(super) is_fn_lock_reverting: Cell<bool>,
         pub(super) is_battery_limit_reverting: Cell<bool>,
         pub(super) is_usb_charge_reverting: Cell<bool>,
         pub(super) is_reader_mode_reverting: Cell<bool>,
-        pub(super) is_fn_lock_reverting: Cell<bool>,
      }
 
     //---------------------------------------
@@ -132,6 +132,18 @@ impl MainWindow {
     fn init_kernel_features(&self) {
         let imp = self.imp();
 
+        // Fn lock
+        match kernel_features::feature(FN_LOCK) {
+            Ok(lock) => {
+                imp.fn_lock_row.set_active(lock != 0);
+            },
+            Err(error) => {
+                imp.fn_lock_row.set_sensitive(false);
+
+                self.show_toast(&format!("Failed to load Fn lock status\n{error}"));
+            }
+        }
+
         // Battery limit
         match kernel_features::feature(BATTERY_LIMIT) {
             Ok(limit) => {
@@ -172,18 +184,6 @@ impl MainWindow {
                 self.show_toast(&format!("Failed to load reader mode\n{error}"));
             }
         }
-
-        // Fn lock
-        match kernel_features::feature(FN_LOCK) {
-            Ok(lock) => {
-                imp.fn_lock_row.set_active(lock != 0);
-            },
-            Err(error) => {
-                imp.fn_lock_row.set_sensitive(false);
-
-                self.show_toast(&format!("Failed to load Fn lock status\n{error}"));
-            }
-        }
     }
 
     //---------------------------------------
@@ -191,6 +191,28 @@ impl MainWindow {
     //---------------------------------------
     fn setup_signals(&self) {
         let imp = self.imp();
+
+        // Fn lock
+        imp.fn_lock_row.connect_active_notify(clone!(
+            #[weak(rename_to = window)] self,
+            move |row| {
+                let imp = window.imp();
+
+                if imp.is_fn_lock_reverting.get() {
+                    imp.is_fn_lock_reverting.set(false);
+                    return
+                }
+
+                let value = if row.is_active() { 1 } else { 0 };
+
+                if let Err(error) = kernel_features::set_feature(FN_LOCK, value) {
+                    imp.is_fn_lock_reverting.set(true);
+                    row.set_active(!row.is_active());
+
+                    window.show_toast(&error);
+                }
+            }
+        ));
 
         // Battery limit
         imp.battery_limit_row.connect_selected_notify(clone!(
@@ -254,28 +276,6 @@ impl MainWindow {
 
                 if let Err(error) = kernel_features::set_feature(READER_MODE, value) {
                     imp.is_reader_mode_reverting.set(true);
-                    row.set_active(!row.is_active());
-
-                    window.show_toast(&error);
-                }
-            }
-        ));
-
-        // Fn lock
-        imp.fn_lock_row.connect_active_notify(clone!(
-            #[weak(rename_to = window)] self,
-            move |row| {
-                let imp = window.imp();
-
-                if imp.is_fn_lock_reverting.get() {
-                    imp.is_fn_lock_reverting.set(false);
-                    return
-                }
-
-                let value = if row.is_active() { 1 } else { 0 };
-
-                if let Err(error) = kernel_features::set_feature(FN_LOCK, value) {
-                    imp.is_fn_lock_reverting.set(true);
                     row.set_active(!row.is_active());
 
                     window.show_toast(&error);
