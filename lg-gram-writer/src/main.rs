@@ -25,7 +25,7 @@ fn main() {
 
     // Check mode
     let result = match mode.as_str() {
-        "--kernel" => set_kernel_feature(&setting, &value),
+        "--feature" => set_feature(&setting, &value),
         "--service" => enable_service(&setting, &value),
         _ => unreachable!()
     };
@@ -43,9 +43,9 @@ fn main() {
 }
 
 //---------------------------------------
-// Set kernel feature function
+// Set feature function
 //---------------------------------------
-fn set_kernel_feature(setting: &str, value: &str) -> Result<String, String> {
+fn set_feature(setting: &str, value: &str) -> Result<String, String> {
     // Check if settings file exists
     let file = format!("/sys/devices/platform/lg-laptop/{}", setting);
 
@@ -97,28 +97,40 @@ fn validate_args(args: &[String]) -> Result<(String, String, String), ()> {
         return Err(());
     }
 
-    let mode = args[1].clone();
-
-    if mode != "--kernel" && mode != "--service" {
-        return Err(());
-    }
-
     let Some((setting, value)) = args[2].split_once("=") else {
         return Err(());
     };
 
-    match (setting, value) {
-        ("battery_care_limit", value) if ["80", "100"].contains(&value) => {
-            Ok((mode, String::from(setting), String::from(value)))
+    let mode = args[1].clone();
+
+    match mode.as_str() {
+        "--feature" => {
+            match (setting, value) {
+                ("battery_care_limit", value) if ["80", "100"].contains(&value) => {
+                    Ok((mode, String::from(setting), String::from(value)))
+                },
+                ("usb_charge", value) if ["0", "1"].contains(&value) => {
+                    Ok((mode, String::from(setting), String::from(value)))
+                },
+                ("reader_mode", value) if ["0", "1"].contains(&value) => {
+                    Ok((mode, String::from(setting), String::from(value)))
+                },
+                ("fn_lock", value) if ["0", "1"].contains(&value) => {
+                    Ok((mode, String::from(setting), String::from(value)))
+                },
+                _ => {
+                    Err(())
+                }
+            }
         },
-        ("usb_charge", value) if ["0", "1"].contains(&value) => {
-            Ok((mode, String::from(setting), String::from(value)))
-        },
-        ("reader_mode", value) if ["0", "1"].contains(&value) => {
-            Ok((mode, String::from(setting), String::from(value)))
-        },
-        ("fn_lock", value) if ["0", "1"].contains(&value) => {
-            Ok((mode, String::from(setting), String::from(value)))
+        "--service" => {
+            if ["battery_care_limit", "usb_charge", "reader_mode", "fn_lock"].contains(&setting) &&
+                ["0", "1"].contains(&value)
+            {
+                Ok((mode, String::from(setting), String::from(value)))
+            } else {
+                Err(())
+            }
         },
         _ => {
             Err(())
