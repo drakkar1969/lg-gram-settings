@@ -6,7 +6,7 @@ use adw::prelude::*;
 use glib::clone;
 
 use crate::Application;
-use crate::modules::kernel_features;
+use crate::lg_gram::gram;
 use crate::battery_limit_object::BatteryLimitObject;
 
 //------------------------------------------------------------------------------
@@ -141,7 +141,7 @@ impl MainWindow {
         let imp = self.imp();
 
         // Fn lock
-        match kernel_features::feature(FN_LOCK) {
+        match gram::feature(FN_LOCK) {
             Ok(lock) => {
                 imp.fn_lock_row.set_active(lock != 0);
             },
@@ -154,7 +154,7 @@ impl MainWindow {
         }
 
         // Battery limit
-        match kernel_features::feature(BATTERY_LIMIT) {
+        match gram::feature(BATTERY_LIMIT) {
             Ok(limit) => {
                 let index = imp.battery_limit_model.iter::<BatteryLimitObject>()
                     .flatten()
@@ -172,7 +172,7 @@ impl MainWindow {
         }
 
         // USB charge
-        match kernel_features::feature(USB_CHARGE) {
+        match gram::feature(USB_CHARGE) {
             Ok(charge) => {
                 imp.usb_charge_row.set_active(charge != 0);
             },
@@ -185,7 +185,7 @@ impl MainWindow {
         }
 
         // Reader mode
-        match kernel_features::feature(READER_MODE) {
+        match gram::feature(READER_MODE) {
             Ok(mode) => {
                 imp.reader_mode_row.set_active(mode != 0);
             },
@@ -217,7 +217,7 @@ impl MainWindow {
 
                 let value = if row.is_active() { 1 } else { 0 };
 
-                if let Err(error) = kernel_features::set_feature(FN_LOCK, value) {
+                if let Err(error) = gram::set_feature(FN_LOCK, value) {
                     imp.is_fn_lock_reverting.set(true);
                     row.set_active(!row.is_active());
 
@@ -242,7 +242,7 @@ impl MainWindow {
                     .expect("Failed to downcast to 'BatteryLimitObject'")
                     .value();
 
-                if let Err(error) = kernel_features::set_feature(BATTERY_LIMIT, value) {
+                if let Err(error) = gram::set_feature(BATTERY_LIMIT, value) {
                     imp.is_battery_limit_reverting.set(true);
                     row.set_selected(1 - row.selected());
 
@@ -264,7 +264,7 @@ impl MainWindow {
 
                 let value = if row.is_active() { 1 } else { 0 };
 
-                if let Err(error) = kernel_features::set_feature(USB_CHARGE, value) {
+                if let Err(error) = gram::set_feature(USB_CHARGE, value) {
                     imp.is_usb_charge_reverting.set(true);
                     row.set_active(!row.is_active());
 
@@ -286,7 +286,7 @@ impl MainWindow {
 
                 let value = if row.is_active() { 1 } else { 0 };
 
-                if let Err(error) = kernel_features::set_feature(READER_MODE, value) {
+                if let Err(error) = gram::set_feature(READER_MODE, value) {
                     imp.is_reader_mode_reverting.set(true);
                     row.set_active(!row.is_active());
 

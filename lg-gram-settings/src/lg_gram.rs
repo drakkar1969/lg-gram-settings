@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
-// MODULE: KernelFeatures
+// MODULE: Gram
 //------------------------------------------------------------------------------
-pub mod kernel_features {
+pub mod gram {
     use std::fs;
     use std::process::Command;
 
