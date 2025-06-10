@@ -5,6 +5,9 @@ use std::path::Path;
 
 use nix;
 
+//------------------------------------------------------------------------------
+// APP: main
+//------------------------------------------------------------------------------
 fn main() {
     // Exit if not running as root
     if !nix::unistd::geteuid().is_root() {
@@ -23,19 +26,26 @@ fn main() {
     // Check mode
     let result = match mode.as_str() {
         "--kernel" => set_kernel_feature(&setting, &value),
+        "--service" => enable_service(&setting, &value),
         _ => unreachable!()
     };
 
     // Exit if error
-    if let Err(error) = result {
-        eprintln!("{error}");
-        process::exit(1);
+    match result {
+        Ok(msg) => {
+            println!("{msg}");
+        },
+        Err(error) => {
+            eprintln!("{error}");
+            process::exit(1);
+        }
     }
-
-    println!("Successfully changed {} setting", setting);
 }
 
-fn set_kernel_feature(setting: &str, value: &str) -> Result<(), String> {
+//---------------------------------------
+// Set kernel feature function
+//---------------------------------------
+fn set_kernel_feature(setting: &str, value: &str) -> Result<String, String> {
     // Check if settings file exists
     let file = format!("/sys/devices/platform/lg-laptop/{}", setting);
 
@@ -46,9 +56,42 @@ fn set_kernel_feature(setting: &str, value: &str) -> Result<(), String> {
     let content = format!("{}\n", value);
 
     fs::write(file, content)
-        .map_err(|_| String::from("ERROR: Error writing to settings file"))
+        .map_err(|_| String::from("ERROR: Error writing to settings file"))?;
+
+    Ok(format!("Successfully changed {} setting", setting))
 }
 
+//---------------------------------------
+// Enable service function
+//---------------------------------------
+fn enable_service(setting: &str, value: &str) -> Result<String, String> {
+    // Check if service unit file exists
+    let service_name = format!("lg-gram-{}.service", setting.replace("_", "-"));
+
+    let unit_file = format!("/usr/lib/systemd/system/{}", service_name);
+
+    fs::metadata(&unit_file)
+        .map_err(|_| String::from("ERROR: Service unit file does not exist"))?;
+
+    // Enable/disable service
+    let enable = if value == "0" { "disable" } else { "enable" };
+
+    let output = process::Command::new("systemctl")
+        .arg(enable)
+        .arg(&service_name)
+        .output()
+        .map_err(|error| error.to_string())?;
+
+    if !output.status.success() {
+        return Err(String::from_utf8_lossy(&output.stderr).into())
+    }
+
+    Ok(format!("Successfully {enable}d {service_name}"))
+}
+
+//---------------------------------------
+// Validate args function
+//---------------------------------------
 fn validate_args(args: &[String]) -> Result<(String, String, String), ()> {
     if args.len() != 3 {
         return Err(());
@@ -83,6 +126,9 @@ fn validate_args(args: &[String]) -> Result<(String, String, String), ()> {
     }
 }
 
+//---------------------------------------
+// Eprint usage function
+//---------------------------------------
 fn eprint_usage(app_path: &str) {
     let app_name = Path::new(app_path)
         .file_name()
