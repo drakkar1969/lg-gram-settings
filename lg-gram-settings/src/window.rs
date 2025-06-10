@@ -35,13 +35,21 @@ mod imp {
         #[template_child]
         pub(super) fn_lock_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
+        pub(super) fn_persistent_row: TemplateChild<adw::SwitchRow>,
+        #[template_child]
         pub(super) battery_limit_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub(super) battery_limit_model: TemplateChild<gio::ListStore>,
         #[template_child]
+        pub(super) battery_persistent_row: TemplateChild<adw::SwitchRow>,
+        #[template_child]
         pub(super) usb_charge_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
+        pub(super) usb_persistent_row: TemplateChild<adw::SwitchRow>,
+        #[template_child]
         pub(super) reader_mode_row: TemplateChild<adw::SwitchRow>,
+        #[template_child]
+        pub(super) reader_persistent_row: TemplateChild<adw::SwitchRow>,
 
         pub(super) is_fn_lock_reverting: Cell<bool>,
         pub(super) is_battery_limit_reverting: Cell<bool>,
@@ -139,6 +147,7 @@ impl MainWindow {
             },
             Err(error) => {
                 imp.fn_lock_row.set_sensitive(false);
+                imp.fn_persistent_row.set_sensitive(false);
 
                 self.show_toast(&format!("Failed to load Fn lock status\n{error}"));
             }
@@ -156,6 +165,7 @@ impl MainWindow {
             },
             Err(error) => {
                 imp.battery_limit_row.set_sensitive(false);
+                imp.battery_persistent_row.set_sensitive(false);
 
                 self.show_toast(&format!("Failed to load battery care limit\n{error}"));
             }
@@ -168,6 +178,7 @@ impl MainWindow {
             },
             Err(error) => {
                 imp.usb_charge_row.set_sensitive(false);
+                imp.usb_persistent_row.set_sensitive(false);
 
                 self.show_toast(&format!("Failed to load USB charge mode\n{error}"));
             }
@@ -180,6 +191,7 @@ impl MainWindow {
             },
             Err(error) => {
                 imp.reader_mode_row.set_sensitive(false);
+                imp.reader_persistent_row.set_sensitive(false);
 
                 self.show_toast(&format!("Failed to load reader mode\n{error}"));
             }
