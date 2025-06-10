@@ -149,7 +149,7 @@ impl MainWindow {
                 imp.fn_lock_row.set_sensitive(false);
                 imp.fn_persistent_row.set_sensitive(false);
 
-                self.show_toast(&format!("Failed to load Fn lock status\n{error}"));
+                self.show_toast(&format!("Failed to load Fn lock status: {error}"));
             }
         }
 
@@ -167,7 +167,7 @@ impl MainWindow {
                 imp.battery_limit_row.set_sensitive(false);
                 imp.battery_persistent_row.set_sensitive(false);
 
-                self.show_toast(&format!("Failed to load battery care limit\n{error}"));
+                self.show_toast(&format!("Failed to load battery care limit: {error}"));
             }
         }
 
@@ -180,7 +180,7 @@ impl MainWindow {
                 imp.usb_charge_row.set_sensitive(false);
                 imp.usb_persistent_row.set_sensitive(false);
 
-                self.show_toast(&format!("Failed to load USB charge mode\n{error}"));
+                self.show_toast(&format!("Failed to load USB charge mode: {error}"));
             }
         }
 
@@ -193,7 +193,7 @@ impl MainWindow {
                 imp.reader_mode_row.set_sensitive(false);
                 imp.reader_persistent_row.set_sensitive(false);
 
-                self.show_toast(&format!("Failed to load reader mode\n{error}"));
+                self.show_toast(&format!("Failed to load reader mode: {error}"));
             }
         }
     }
