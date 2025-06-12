@@ -153,6 +153,17 @@ impl MainWindow {
             }
         }
 
+        match gram::is_service_enabled(FN_LOCK) {
+            Ok(state) => {
+                imp.fn_persistent_row.set_active(state);
+            },
+            Err(error) => {
+                imp.fn_persistent_row.set_sensitive(false);
+
+                self.show_toast(&format!("Failed to load Fn lock service status: {error}"));
+            }
+        }
+
         // Battery limit
         match gram::feature(BATTERY_LIMIT) {
             Ok(limit) => {
@@ -171,6 +182,17 @@ impl MainWindow {
             }
         }
 
+        match gram::is_service_enabled(BATTERY_LIMIT) {
+            Ok(state) => {
+                imp.battery_persistent_row.set_active(state);
+            },
+            Err(error) => {
+                imp.battery_persistent_row.set_sensitive(false);
+
+                self.show_toast(&format!("Failed to load battery care limit service status: {error}"));
+            }
+        }
+
         // USB charge
         match gram::feature(USB_CHARGE) {
             Ok(charge) => {
@@ -184,6 +206,17 @@ impl MainWindow {
             }
         }
 
+        match gram::is_service_enabled(USB_CHARGE) {
+            Ok(state) => {
+                imp.usb_persistent_row.set_active(state);
+            },
+            Err(error) => {
+                imp.usb_persistent_row.set_sensitive(false);
+
+                self.show_toast(&format!("Failed to load USB charge service status: {error}"));
+            }
+        }
+
         // Reader mode
         match gram::feature(READER_MODE) {
             Ok(mode) => {
@@ -194,6 +227,17 @@ impl MainWindow {
                 imp.reader_persistent_row.set_sensitive(false);
 
                 self.show_toast(&format!("Failed to load reader mode: {error}"));
+            }
+        }
+
+        match gram::is_service_enabled(READER_MODE) {
+            Ok(state) => {
+                imp.reader_persistent_row.set_active(state);
+            },
+            Err(error) => {
+                imp.reader_persistent_row.set_sensitive(false);
+
+                self.show_toast(&format!("Failed to load reader mode service status: {error}"));
             }
         }
     }

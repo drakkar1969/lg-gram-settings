@@ -41,4 +41,20 @@ pub mod gram {
 
         Ok(String::from_utf8_lossy(&output.stdout).into())
     }
+
+    //---------------------------------------
+    // Is service enabled function
+    //---------------------------------------
+    pub fn is_service_enabled(id: &str) -> Result<bool, String> {
+        let unit_file = format!("lg-gram-{}.service", id.replace("_", "-"));
+
+        let status = Command::new("systemctl")
+            .arg("--quiet")
+            .arg("is-enabled")
+            .arg(unit_file)
+            .status()
+            .map_err(|error| error.to_string())?;
+
+        Ok(status.success())
+    }
 }
