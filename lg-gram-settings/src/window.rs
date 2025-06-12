@@ -144,6 +144,7 @@ impl MainWindow {
         match gram::feature(FN_LOCK) {
             Ok(lock) => {
                 imp.fn_lock_row.set_active(lock != 0);
+                imp.fn_persistent_row.set_sensitive(imp.fn_lock_row.is_active());
             },
             Err(error) => {
                 imp.fn_lock_row.set_sensitive(false);
@@ -173,6 +174,7 @@ impl MainWindow {
                     .unwrap_or_default();
 
                 imp.battery_limit_row.set_selected(index as u32);
+                imp.battery_persistent_row.set_sensitive(index != 0);
             },
             Err(error) => {
                 imp.battery_limit_row.set_sensitive(false);
@@ -197,6 +199,7 @@ impl MainWindow {
         match gram::feature(USB_CHARGE) {
             Ok(charge) => {
                 imp.usb_charge_row.set_active(charge != 0);
+                imp.usb_persistent_row.set_sensitive(imp.usb_charge_row.is_active());
             },
             Err(error) => {
                 imp.usb_charge_row.set_sensitive(false);
@@ -221,6 +224,7 @@ impl MainWindow {
         match gram::feature(READER_MODE) {
             Ok(mode) => {
                 imp.reader_mode_row.set_active(mode != 0);
+                imp.reader_persistent_row.set_sensitive(imp.reader_mode_row.is_active());
             },
             Err(error) => {
                 imp.reader_mode_row.set_sensitive(false);
@@ -267,6 +271,8 @@ impl MainWindow {
 
                     window.show_toast(&error);
                 }
+
+                imp.fn_persistent_row.set_sensitive(row.is_active());
             }
         ));
 
@@ -292,6 +298,8 @@ impl MainWindow {
 
                     window.show_toast(&error);
                 }
+
+                imp.battery_persistent_row.set_sensitive(row.selected() != 0);
             }
         ));
 
@@ -314,6 +322,8 @@ impl MainWindow {
 
                     window.show_toast(&error);
                 }
+
+                imp.usb_persistent_row.set_sensitive(row.is_active());
             }
         ));
 
@@ -336,6 +346,8 @@ impl MainWindow {
 
                     window.show_toast(&error);
                 }
+
+                imp.reader_persistent_row.set_sensitive(row.is_active());
             }
         ));
     }
