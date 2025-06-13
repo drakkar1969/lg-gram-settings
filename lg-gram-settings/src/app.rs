@@ -94,15 +94,14 @@ impl Application {
 
                 let about_dialog = adw::AboutDialog::builder()
                     .application_name("LG Gram Settings")
-                    // .application_icon("software-properties")
                     .developer_name("draKKar1969")
                     .version(env!("CARGO_PKG_VERSION"))
-                    // .website("https://github.com/drakkar1969/lg-gram-settings")
-                    .developers(["draKKar1969"])
-                    .designers(["draKKar1969"])
+                    .website("https://github.com/drakkar1969/lg-gram")
                     .copyright("© 2025 draKKar1969")
                     .license_type(gtk::License::Gpl30)
                     .build();
+
+                about_dialog.add_link("LG Gram Laptop Extra Features", "https://www.kernel.org/doc/html/latest/admin-guide/laptops/lg-laptop.html");
 
                 about_dialog.present(Some(&window));
             })
