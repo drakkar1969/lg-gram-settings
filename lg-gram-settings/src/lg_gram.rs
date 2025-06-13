@@ -57,4 +57,22 @@ pub mod gram {
 
         Ok(status.success())
     }
+
+    //---------------------------------------
+    // Enable service function
+    //---------------------------------------
+    pub fn enable_service(id: &str, value: u32) -> Result<String, String> {
+        let output = Command::new("pkexec")
+            .arg("lg-gram-writer")
+            .arg("--service")
+            .arg(format!("{id}={value}"))
+            .output()
+            .map_err(|error| error.to_string())?;
+
+        if !output.status.success() {
+            return Err(String::from_utf8_lossy(&output.stderr).into())
+        }
+
+        Ok(String::from_utf8_lossy(&output.stdout).into())
+    }
 }
