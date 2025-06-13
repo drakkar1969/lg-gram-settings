@@ -91,7 +91,6 @@ mod imp {
             let obj = self.obj();
 
             obj.init_kernel_features();
-            obj.setup_signals();
         }
     }
 
@@ -142,112 +141,119 @@ impl MainWindow {
     // Init kernel features
     //---------------------------------------
     fn init_kernel_features(&self) {
-        let imp = self.imp();
+        glib::spawn_future_local(clone!(
+            #[weak(rename_to = window)] self,
+            async move {
+                let imp = window.imp();
 
-        // Fn lock
-        match gram::feature(FN_LOCK) {
-            Ok(lock) => {
-                imp.fn_lock_row.set_active(lock != 0);
-                imp.fn_persistent_row.set_sensitive(imp.fn_lock_row.is_active());
-            },
-            Err(error) => {
-                imp.fn_lock_row.set_sensitive(false);
-                imp.fn_persistent_row.set_sensitive(false);
+                // Fn lock
+                match gram::feature(FN_LOCK) {
+                    Ok(lock) => {
+                        imp.fn_lock_row.set_active(lock != 0);
+                        imp.fn_persistent_row.set_sensitive(imp.fn_lock_row.is_active());
+                    },
+                    Err(error) => {
+                        imp.fn_lock_row.set_sensitive(false);
+                        imp.fn_persistent_row.set_sensitive(false);
 
-                self.show_toast(&format!("Failed to load Fn lock status: {error}"));
+                        window.show_toast(&format!("Failed to load Fn lock status: {error}"));
+                    }
+                }
+
+                match gram::is_service_enabled(FN_LOCK) {
+                    Ok(state) => {
+                        imp.fn_persistent_row.set_active(state);
+                    },
+                    Err(error) => {
+                        imp.fn_persistent_row.set_sensitive(false);
+
+                        window.show_toast(&format!("Failed to load Fn lock service status: {error}"));
+                    }
+                }
+
+                // Battery limit
+                match gram::feature(BATTERY_LIMIT) {
+                    Ok(limit) => {
+                        let index = imp.battery_limit_model.iter::<BatteryLimitObject>()
+                            .flatten()
+                            .position(|item| item.value() == limit)
+                            .unwrap_or_default();
+
+                        imp.battery_limit_row.set_selected(index as u32);
+                        imp.battery_persistent_row.set_sensitive(index != 0);
+                    },
+                    Err(error) => {
+                        imp.battery_limit_row.set_sensitive(false);
+                        imp.battery_persistent_row.set_sensitive(false);
+
+                        window.show_toast(&format!("Failed to load battery care limit: {error}"));
+                    }
+                }
+
+                match gram::is_service_enabled(BATTERY_LIMIT) {
+                    Ok(state) => {
+                        imp.battery_persistent_row.set_active(state);
+                    },
+                    Err(error) => {
+                        imp.battery_persistent_row.set_sensitive(false);
+
+                        window.show_toast(&format!("Failed to load battery care limit service status: {error}"));
+                    }
+                }
+
+                // USB charge
+                match gram::feature(USB_CHARGE) {
+                    Ok(charge) => {
+                        imp.usb_charge_row.set_active(charge != 0);
+                        imp.usb_persistent_row.set_sensitive(imp.usb_charge_row.is_active());
+                    },
+                    Err(error) => {
+                        imp.usb_charge_row.set_sensitive(false);
+                        imp.usb_persistent_row.set_sensitive(false);
+
+                        window.show_toast(&format!("Failed to load USB charge mode: {error}"));
+                    }
+                }
+
+                match gram::is_service_enabled(USB_CHARGE) {
+                    Ok(state) => {
+                        imp.usb_persistent_row.set_active(state);
+                    },
+                    Err(error) => {
+                        imp.usb_persistent_row.set_sensitive(false);
+
+                        window.show_toast(&format!("Failed to load USB charge service status: {error}"));
+                    }
+                }
+
+                // Reader mode
+                match gram::feature(READER_MODE) {
+                    Ok(mode) => {
+                        imp.reader_mode_row.set_active(mode != 0);
+                        imp.reader_persistent_row.set_sensitive(imp.reader_mode_row.is_active());
+                    },
+                    Err(error) => {
+                        imp.reader_mode_row.set_sensitive(false);
+                        imp.reader_persistent_row.set_sensitive(false);
+
+                        window.show_toast(&format!("Failed to load reader mode: {error}"));
+                    }
+                }
+
+                match gram::is_service_enabled(READER_MODE) {
+                    Ok(state) => {
+                        imp.reader_persistent_row.set_active(state);
+                    },
+                    Err(error) => {
+                        imp.reader_persistent_row.set_sensitive(false);
+
+                        window.show_toast(&format!("Failed to load reader mode service status: {error}"));
+                    }
+                }
+
+                window.setup_signals();
             }
-        }
-
-        match gram::is_service_enabled(FN_LOCK) {
-            Ok(state) => {
-                imp.fn_persistent_row.set_active(state);
-            },
-            Err(error) => {
-                imp.fn_persistent_row.set_sensitive(false);
-
-                self.show_toast(&format!("Failed to load Fn lock service status: {error}"));
-            }
-        }
-
-        // Battery limit
-        match gram::feature(BATTERY_LIMIT) {
-            Ok(limit) => {
-                let index = imp.battery_limit_model.iter::<BatteryLimitObject>()
-                    .flatten()
-                    .position(|item| item.value() == limit)
-                    .unwrap_or_default();
-
-                imp.battery_limit_row.set_selected(index as u32);
-                imp.battery_persistent_row.set_sensitive(index != 0);
-            },
-            Err(error) => {
-                imp.battery_limit_row.set_sensitive(false);
-                imp.battery_persistent_row.set_sensitive(false);
-
-                self.show_toast(&format!("Failed to load battery care limit: {error}"));
-            }
-        }
-
-        match gram::is_service_enabled(BATTERY_LIMIT) {
-            Ok(state) => {
-                imp.battery_persistent_row.set_active(state);
-            },
-            Err(error) => {
-                imp.battery_persistent_row.set_sensitive(false);
-
-                self.show_toast(&format!("Failed to load battery care limit service status: {error}"));
-            }
-        }
-
-        // USB charge
-        match gram::feature(USB_CHARGE) {
-            Ok(charge) => {
-                imp.usb_charge_row.set_active(charge != 0);
-                imp.usb_persistent_row.set_sensitive(imp.usb_charge_row.is_active());
-            },
-            Err(error) => {
-                imp.usb_charge_row.set_sensitive(false);
-                imp.usb_persistent_row.set_sensitive(false);
-
-                self.show_toast(&format!("Failed to load USB charge mode: {error}"));
-            }
-        }
-
-        match gram::is_service_enabled(USB_CHARGE) {
-            Ok(state) => {
-                imp.usb_persistent_row.set_active(state);
-            },
-            Err(error) => {
-                imp.usb_persistent_row.set_sensitive(false);
-
-                self.show_toast(&format!("Failed to load USB charge service status: {error}"));
-            }
-        }
-
-        // Reader mode
-        match gram::feature(READER_MODE) {
-            Ok(mode) => {
-                imp.reader_mode_row.set_active(mode != 0);
-                imp.reader_persistent_row.set_sensitive(imp.reader_mode_row.is_active());
-            },
-            Err(error) => {
-                imp.reader_mode_row.set_sensitive(false);
-                imp.reader_persistent_row.set_sensitive(false);
-
-                self.show_toast(&format!("Failed to load reader mode: {error}"));
-            }
-        }
-
-        match gram::is_service_enabled(READER_MODE) {
-            Ok(state) => {
-                imp.reader_persistent_row.set_active(state);
-            },
-            Err(error) => {
-                imp.reader_persistent_row.set_sensitive(false);
-
-                self.show_toast(&format!("Failed to load reader mode service status: {error}"));
-            }
-        }
+        ));
     }
 
     //---------------------------------------
