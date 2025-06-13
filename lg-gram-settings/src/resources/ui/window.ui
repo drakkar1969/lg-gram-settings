@@ -2,7 +2,7 @@
 <interface>
   <!--// MainWindow template //-->
   <template class="MainWindow" parent="AdwApplicationWindow">
-    <property name="default-width">670</property>
+    <property name="default-width">620</property>
     <property name="title"></property>
     <property name="content">
       <object class="AdwToastOverlay" id="toast_overlay">
@@ -36,7 +36,6 @@
                 </child>
                 <child>
                   <object class="AdwPreferencesGroup">
-                    <!-- <property name="title">Kernel Features</property> -->
                     <property name="separate-rows">true</property>
                     <child>
                       <object class="AdwSwitchRow" id="fn_lock_row">
@@ -61,8 +60,8 @@
                             </child>
                             <child>
                               <object class="GtkToggleButton" id="fn_lock_button">
-                                <property name="icon-name">persistent-symbolic</property>
                                 <property name="valign">center</property>
+                                <property name="icon-name">persistent-symbolic</property>
                                 <style>
                                   <class name="circular"/>
                                   <class name="flat"/>
@@ -123,8 +122,8 @@
                             </child>
                             <child>
                               <object class="GtkToggleButton" id="battery_limit_button">
-                                <property name="icon-name">persistent-symbolic</property>
                                 <property name="valign">center</property>
+                                <property name="icon-name">persistent-symbolic</property>
                                 <style>
                                   <class name="circular"/>
                                   <class name="flat"/>
@@ -138,7 +137,7 @@
                     <child>
                       <object class="AdwSwitchRow" id="usb_charge_row">
                         <property name="title">_USB Charge</property>
-                        <property name="subtitle">Charge another device from the USB port while the device is turned off</property>
+                        <property name="subtitle">Charge devices from USB ports while the device is turned off</property>
                         <property name="use-underline">true</property>
                         <child type="prefix">
                           <object class="GtkImage">
@@ -158,8 +157,8 @@
                             </child>
                             <child>
                               <object class="GtkToggleButton" id="usb_charge_button">
-                                <property name="icon-name">persistent-symbolic</property>
                                 <property name="valign">center</property>
+                                <property name="icon-name">persistent-symbolic</property>
                                 <style>
                                   <class name="circular"/>
                                   <class name="flat"/>
@@ -193,8 +192,8 @@
                             </child>
                             <child>
                               <object class="GtkToggleButton" id="reader_mode_button">
-                                <property name="icon-name">persistent-symbolic</property>
                                 <property name="valign">center</property>
+                                <property name="icon-name">persistent-symbolic</property>
                                 <style>
                                   <class name="circular"/>
                                   <class name="flat"/>
