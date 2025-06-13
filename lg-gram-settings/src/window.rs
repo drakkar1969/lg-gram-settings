@@ -35,21 +35,21 @@ mod imp {
         #[template_child]
         pub(super) fn_lock_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub(super) fn_persistent_row: TemplateChild<adw::SwitchRow>,
+        pub(super) fn_lock_button: TemplateChild<gtk::ToggleButton>,
         #[template_child]
         pub(super) battery_limit_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub(super) battery_limit_model: TemplateChild<gio::ListStore>,
         #[template_child]
-        pub(super) battery_persistent_row: TemplateChild<adw::SwitchRow>,
+        pub(super) battery_limit_button: TemplateChild<gtk::ToggleButton>,
         #[template_child]
         pub(super) usb_charge_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub(super) usb_persistent_row: TemplateChild<adw::SwitchRow>,
+        pub(super) usb_charge_button: TemplateChild<gtk::ToggleButton>,
         #[template_child]
         pub(super) reader_mode_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
-        pub(super) reader_persistent_row: TemplateChild<adw::SwitchRow>,
+        pub(super) reader_mode_button: TemplateChild<gtk::ToggleButton>,
 
         pub(super) is_fn_lock_reverting: Cell<bool>,
         pub(super) is_fn_persistent_reverting: Cell<bool>,
@@ -150,11 +150,11 @@ impl MainWindow {
                 match gram::feature(FN_LOCK) {
                     Ok(lock) => {
                         imp.fn_lock_row.set_active(lock != 0);
-                        imp.fn_persistent_row.set_sensitive(imp.fn_lock_row.is_active());
+                        imp.fn_lock_button.set_sensitive(imp.fn_lock_row.is_active());
                     },
                     Err(error) => {
                         imp.fn_lock_row.set_sensitive(false);
-                        imp.fn_persistent_row.set_sensitive(false);
+                        imp.fn_lock_button.set_sensitive(false);
 
                         window.show_toast(&format!("Failed to load Fn lock status: {error}"));
                     }
@@ -162,10 +162,10 @@ impl MainWindow {
 
                 match gram::is_service_enabled(FN_LOCK) {
                     Ok(state) => {
-                        imp.fn_persistent_row.set_active(state);
+                        imp.fn_lock_button.set_active(state);
                     },
                     Err(error) => {
-                        imp.fn_persistent_row.set_sensitive(false);
+                        imp.fn_lock_button.set_sensitive(false);
 
                         window.show_toast(&format!("Failed to load Fn lock service status: {error}"));
                     }
@@ -180,11 +180,11 @@ impl MainWindow {
                             .unwrap_or_default();
 
                         imp.battery_limit_row.set_selected(index as u32);
-                        imp.battery_persistent_row.set_sensitive(index != 0);
+                        imp.battery_limit_button.set_sensitive(index != 0);
                     },
                     Err(error) => {
                         imp.battery_limit_row.set_sensitive(false);
-                        imp.battery_persistent_row.set_sensitive(false);
+                        imp.battery_limit_button.set_sensitive(false);
 
                         window.show_toast(&format!("Failed to load battery care limit: {error}"));
                     }
@@ -192,10 +192,10 @@ impl MainWindow {
 
                 match gram::is_service_enabled(BATTERY_LIMIT) {
                     Ok(state) => {
-                        imp.battery_persistent_row.set_active(state);
+                        imp.battery_limit_button.set_active(state);
                     },
                     Err(error) => {
-                        imp.battery_persistent_row.set_sensitive(false);
+                        imp.battery_limit_button.set_sensitive(false);
 
                         window.show_toast(&format!("Failed to load battery care limit service status: {error}"));
                     }
@@ -205,11 +205,11 @@ impl MainWindow {
                 match gram::feature(USB_CHARGE) {
                     Ok(charge) => {
                         imp.usb_charge_row.set_active(charge != 0);
-                        imp.usb_persistent_row.set_sensitive(imp.usb_charge_row.is_active());
+                        imp.usb_charge_button.set_sensitive(imp.usb_charge_row.is_active());
                     },
                     Err(error) => {
                         imp.usb_charge_row.set_sensitive(false);
-                        imp.usb_persistent_row.set_sensitive(false);
+                        imp.usb_charge_button.set_sensitive(false);
 
                         window.show_toast(&format!("Failed to load USB charge mode: {error}"));
                     }
@@ -217,10 +217,10 @@ impl MainWindow {
 
                 match gram::is_service_enabled(USB_CHARGE) {
                     Ok(state) => {
-                        imp.usb_persistent_row.set_active(state);
+                        imp.usb_charge_button.set_active(state);
                     },
                     Err(error) => {
-                        imp.usb_persistent_row.set_sensitive(false);
+                        imp.usb_charge_button.set_sensitive(false);
 
                         window.show_toast(&format!("Failed to load USB charge service status: {error}"));
                     }
@@ -230,11 +230,11 @@ impl MainWindow {
                 match gram::feature(READER_MODE) {
                     Ok(mode) => {
                         imp.reader_mode_row.set_active(mode != 0);
-                        imp.reader_persistent_row.set_sensitive(imp.reader_mode_row.is_active());
+                        imp.reader_mode_button.set_sensitive(imp.reader_mode_row.is_active());
                     },
                     Err(error) => {
                         imp.reader_mode_row.set_sensitive(false);
-                        imp.reader_persistent_row.set_sensitive(false);
+                        imp.reader_mode_button.set_sensitive(false);
 
                         window.show_toast(&format!("Failed to load reader mode: {error}"));
                     }
@@ -242,10 +242,10 @@ impl MainWindow {
 
                 match gram::is_service_enabled(READER_MODE) {
                     Ok(state) => {
-                        imp.reader_persistent_row.set_active(state);
+                        imp.reader_mode_button.set_active(state);
                     },
                     Err(error) => {
-                        imp.reader_persistent_row.set_sensitive(false);
+                        imp.reader_mode_button.set_sensitive(false);
 
                         window.show_toast(&format!("Failed to load reader mode service status: {error}"));
                     }
@@ -282,17 +282,17 @@ impl MainWindow {
                     window.show_toast(&error);
                 } else {
                     if !row.is_active() {
-                        imp.fn_persistent_row.set_active(false);
+                        imp.fn_lock_button.set_active(false);
                     }
                 }
 
-                imp.fn_persistent_row.set_sensitive(row.is_active());
+                imp.fn_lock_button.set_sensitive(row.is_active());
             }
         ));
 
-        imp.fn_persistent_row.connect_active_notify(clone!(
+        imp.fn_lock_button.connect_active_notify(clone!(
             #[weak(rename_to = window)] self,
-            move |row| {
+            move |button| {
                 let imp = window.imp();
 
                 if imp.is_fn_persistent_reverting.get() {
@@ -300,11 +300,11 @@ impl MainWindow {
                     return
                 }
 
-                let value = u32::from(row.is_active());
+                let value = u32::from(button.is_active());
 
                 if let Err(error) = gram::enable_service(FN_LOCK, value) {
                     imp.is_fn_persistent_reverting.set(true);
-                    row.set_active(!row.is_active());
+                    button.set_active(!button.is_active());
 
                     window.show_toast(&error);
                 }
@@ -334,17 +334,17 @@ impl MainWindow {
                     window.show_toast(&error);
                 } else {
                     if row.selected() == 0 {
-                        imp.battery_persistent_row.set_active(false);
+                        imp.battery_limit_button.set_active(false);
                     }
                 }
 
-                imp.battery_persistent_row.set_sensitive(row.selected() != 0);
+                imp.battery_limit_button.set_sensitive(row.selected() != 0);
             }
         ));
 
-        imp.battery_persistent_row.connect_active_notify(clone!(
+        imp.battery_limit_button.connect_active_notify(clone!(
             #[weak(rename_to = window)] self,
-            move |row| {
+            move |button| {
                 let imp = window.imp();
 
                 if imp.is_battery_persistent_reverting.get() {
@@ -352,11 +352,11 @@ impl MainWindow {
                     return
                 }
 
-                let value = u32::from(row.is_active());
+                let value = u32::from(button.is_active());
 
                 if let Err(error) = gram::enable_service(BATTERY_LIMIT, value) {
                     imp.is_battery_persistent_reverting.set(true);
-                    row.set_active(!row.is_active());
+                    button.set_active(!button.is_active());
 
                     window.show_toast(&error);
                 }
@@ -383,17 +383,17 @@ impl MainWindow {
                     window.show_toast(&error);
                 } else {
                     if !row.is_active() {
-                        imp.usb_persistent_row.set_active(false);
+                        imp.usb_charge_button.set_active(false);
                     }
                 }
 
-                imp.usb_persistent_row.set_sensitive(row.is_active());
+                imp.usb_charge_button.set_sensitive(row.is_active());
             }
         ));
 
-        imp.usb_persistent_row.connect_active_notify(clone!(
+        imp.usb_charge_button.connect_active_notify(clone!(
             #[weak(rename_to = window)] self,
-            move |row| {
+            move |button| {
                 let imp = window.imp();
 
                 if imp.is_usb_persistent_reverting.get() {
@@ -401,11 +401,11 @@ impl MainWindow {
                     return
                 }
 
-                let value = u32::from(row.is_active());
+                let value = u32::from(button.is_active());
 
                 if let Err(error) = gram::enable_service(USB_CHARGE, value) {
                     imp.is_usb_persistent_reverting.set(true);
-                    row.set_active(!row.is_active());
+                    button.set_active(!button.is_active());
 
                     window.show_toast(&error);
                 }
@@ -432,17 +432,17 @@ impl MainWindow {
                     window.show_toast(&error);
                 } else {
                     if !row.is_active() {
-                        imp.reader_persistent_row.set_active(false);
+                        imp.reader_mode_button.set_active(false);
                     }
                 }
 
-                imp.reader_persistent_row.set_sensitive(row.is_active());
+                imp.reader_mode_button.set_sensitive(row.is_active());
             }
         ));
 
-        imp.reader_persistent_row.connect_active_notify(clone!(
+        imp.reader_mode_button.connect_active_notify(clone!(
             #[weak(rename_to = window)] self,
-            move |row| {
+            move |button| {
                 let imp = window.imp();
 
                 if imp.is_reader_persistent_reverting.get() {
@@ -450,11 +450,11 @@ impl MainWindow {
                     return
                 }
 
-                let value = u32::from(row.is_active());
+                let value = u32::from(button.is_active());
 
                 if let Err(error) = gram::enable_service(READER_MODE, value) {
                     imp.is_reader_persistent_reverting.set(true);
-                    row.set_active(!row.is_active());
+                    button.set_active(!button.is_active());
 
                     window.show_toast(&error);
                 }

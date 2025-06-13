@@ -2,8 +2,8 @@
 <interface>
   <!--// MainWindow template //-->
   <template class="MainWindow" parent="AdwApplicationWindow">
-    <property name="default-width">600</property>
-    <property name="default-height">775</property>
+    <property name="default-width">670</property>
+    <property name="default-height">390</property>
     <property name="title">LG Gram Settings</property>
     <property name="content">
       <object class="AdwToastOverlay" id="toast_overlay">
@@ -36,10 +36,12 @@
                     <property name="spacing">30</property>
                     <child>
                       <object class="AdwPreferencesGroup">
-                        <property name="title">Keyboard</property>
+                        <property name="title">Kernel Features</property>
+                        <property name="separate-rows">true</property>
                         <child>
                           <object class="AdwSwitchRow" id="fn_lock_row">
                             <property name="title">Fn _Lock</property>
+                            <property name="subtitle">Lock keyboard Fn keys</property>
                             <property name="use-underline">true</property>
                             <child type="prefix">
                               <object class="GtkImage">
@@ -47,25 +49,30 @@
                                 <property name="pixel-size">24</property>
                               </object>
                             </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="AdwSwitchRow" id="fn_persistent_row">
-                            <property name="title">Persistent</property>
-                            <property name="subtitle">Make setting persistent across reboots (requires systemd service)</property>
-                            <property name="use-underline">true</property>
-                            <child type="prefix">
-                              <object class="GtkImage">
-                                <property name="pixel-size">24</property>
+                            <child type="suffix">
+                              <object class="GtkBox">
+                                <property name="spacing">12</property>
+                                <child>
+                                  <object class="GtkSeparator">
+                                    <property name="margin-start">12</property>
+                                    <property name="margin-top">12</property>
+                                    <property name="margin-bottom">12</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkToggleButton" id="fn_lock_button">
+                                    <property name="icon-name">persistent-symbolic</property>
+                                    <property name="valign">center</property>
+                                    <style>
+                                      <class name="circular"/>
+                                      <class name="flat"/>
+                                    </style>
+                                  </object>
+                                </child>
                               </object>
                             </child>
                           </object>
                         </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="AdwPreferencesGroup">
-                        <property name="title">Battery</property>
                         <child>
                           <object class="AdwComboRow" id="battery_limit_row">
                             <property name="title">_Battery Care Limit</property>
@@ -104,25 +111,30 @@
                                 <property name="pixel-size">24</property>
                               </object>
                             </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="AdwSwitchRow" id="battery_persistent_row">
-                            <property name="title">Persistent</property>
-                            <property name="subtitle">Make setting persistent across reboots (requires systemd service)</property>
-                            <property name="use-underline">true</property>
-                            <child type="prefix">
-                              <object class="GtkImage">
-                                <property name="pixel-size">24</property>
+                            <child type="suffix">
+                              <object class="GtkBox">
+                                <property name="spacing">12</property>
+                                <child>
+                                  <object class="GtkSeparator">
+                                    <property name="margin-start">12</property>
+                                    <property name="margin-top">12</property>
+                                    <property name="margin-bottom">12</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkToggleButton" id="battery_limit_button">
+                                    <property name="icon-name">persistent-symbolic</property>
+                                    <property name="valign">center</property>
+                                    <style>
+                                      <class name="circular"/>
+                                      <class name="flat"/>
+                                    </style>
+                                  </object>
+                                </child>
                               </object>
                             </child>
                           </object>
                         </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="AdwPreferencesGroup">
-                        <property name="title">USB Charging</property>
                         <child>
                           <object class="AdwSwitchRow" id="usb_charge_row">
                             <property name="title">_USB Charge</property>
@@ -134,25 +146,30 @@
                                 <property name="pixel-size">24</property>
                               </object>
                             </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="AdwSwitchRow" id="usb_persistent_row">
-                            <property name="title">Persistent</property>
-                            <property name="subtitle">Make setting persistent across reboots (requires systemd service)</property>
-                            <property name="use-underline">true</property>
-                            <child type="prefix">
-                              <object class="GtkImage">
-                                <property name="pixel-size">24</property>
+                            <child type="suffix">
+                              <object class="GtkBox">
+                                <property name="spacing">12</property>
+                                <child>
+                                  <object class="GtkSeparator">
+                                    <property name="margin-start">12</property>
+                                    <property name="margin-top">12</property>
+                                    <property name="margin-bottom">12</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkToggleButton" id="usb_charge_button">
+                                    <property name="icon-name">persistent-symbolic</property>
+                                    <property name="valign">center</property>
+                                    <style>
+                                      <class name="circular"/>
+                                      <class name="flat"/>
+                                    </style>
+                                  </object>
+                                </child>
                               </object>
                             </child>
                           </object>
                         </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="AdwPreferencesGroup">
-                        <property name="title">Reader Mode</property>
                         <child>
                           <object class="AdwSwitchRow" id="reader_mode_row">
                             <property name="title">_Reader Mode</property>
@@ -164,16 +181,26 @@
                                 <property name="pixel-size">24</property>
                               </object>
                             </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="AdwSwitchRow" id="reader_persistent_row">
-                            <property name="title">Persistent</property>
-                            <property name="subtitle">Make setting persistent across reboots (requires systemd service)</property>
-                            <property name="use-underline">true</property>
-                            <child type="prefix">
-                              <object class="GtkImage">
-                                <property name="pixel-size">24</property>
+                            <child type="suffix">
+                              <object class="GtkBox">
+                                <property name="spacing">12</property>
+                                <child>
+                                  <object class="GtkSeparator">
+                                    <property name="margin-start">12</property>
+                                    <property name="margin-top">12</property>
+                                    <property name="margin-bottom">12</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkToggleButton" id="reader_mode_button">
+                                    <property name="icon-name">persistent-symbolic</property>
+                                    <property name="valign">center</property>
+                                    <style>
+                                      <class name="circular"/>
+                                      <class name="flat"/>
+                                    </style>
+                                  </object>
+                                </child>
                               </object>
                             </child>
                           </object>
