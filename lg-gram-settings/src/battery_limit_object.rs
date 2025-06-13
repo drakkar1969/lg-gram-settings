@@ -50,16 +50,3 @@ mod imp {
 glib::wrapper! {
     pub struct BatteryLimitObject(ObjectSubclass<imp::BatteryLimitObject>);
 }
-
-impl BatteryLimitObject {
-    //-----------------------------------
-    // New function
-    //-----------------------------------
-    pub fn new(value: u32, description: &str) -> Self {
-        // Build BatteryLimitObject
-        glib::Object::builder()
-            .property("value", value)
-            .property("description", description)
-            .build()
-    }
-}
