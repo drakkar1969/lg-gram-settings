@@ -3,6 +3,7 @@
   <!--// MainWindow template //-->
   <template class="MainWindow" parent="AdwApplicationWindow">
     <property name="default-width">620</property>
+    <property name="resizable">false</property>
     <property name="title"></property>
     <property name="content">
       <object class="AdwToastOverlay" id="toast_overlay">
