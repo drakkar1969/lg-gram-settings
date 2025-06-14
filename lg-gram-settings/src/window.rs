@@ -53,6 +53,16 @@ mod imp {
             BatteryLimitObject::ensure_type();
 
             klass.bind_template();
+
+            // Open settings foldeer action
+            klass.install_action("win.open-settings-folder", None, |_, _, _| {
+                let uri = format!("file:///sys/devices/platform/lg-laptop");
+
+                if let Some(desktop) = gio::AppInfo::default_for_type("inode/directory", true) {
+                    let _res = desktop.launch_uris(&[&uri], None::<&gio::AppLaunchContext>);
+                }
+            });
+
         }
 
         fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {

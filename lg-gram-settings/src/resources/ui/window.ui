@@ -82,6 +82,12 @@
   <menu id="primary_menu">
     <section>
       <item>
+        <attribute name="label">Open Settings Folder</attribute>
+        <attribute name="action">win.open-settings-folder</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
         <attribute name="label">About LG Gram Settings</attribute>
         <attribute name="action">app.show-about</attribute>
       </item>
