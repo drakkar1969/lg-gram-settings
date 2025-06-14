@@ -237,10 +237,10 @@ impl GramSettingWidget {
         match &active_index {
             Ok(index) => {
                 imp.toggle_group.set_active(*index as u32);
-                imp.persistent_button.set_sensitive(*index != 0);
 
                 match gram::is_service_enabled(id) {
                     Ok(state) => {
+                        imp.persistent_button.set_sensitive(*index != 0);
                         imp.persistent_button.set_active(state);
 
                         imp.id.set(id.to_owned()).unwrap();
