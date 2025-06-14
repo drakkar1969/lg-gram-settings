@@ -82,6 +82,10 @@
   <menu id="primary_menu">
     <section>
       <item>
+        <attribute name="label">Show System Information</attribute>
+        <attribute name="action">win.show-system-information</attribute>
+      </item>
+      <item>
         <attribute name="label">Open Settings Folder</attribute>
         <attribute name="action">win.open-settings-folder</attribute>
       </item>

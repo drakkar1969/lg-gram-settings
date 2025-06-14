@@ -6,6 +6,7 @@ use glib::{clone, closure_local};
 use crate::Application;
 use crate::gram_setting_widget::GramSettingWidget;
 use crate::battery_limit_object::BatteryLimitObject;
+use crate::lg_gram::gram;
 
 //------------------------------------------------------------------------------
 // CONSTANTS
@@ -54,7 +55,46 @@ mod imp {
 
             klass.bind_template();
 
-            // Open settings foldeer action
+            // Show system information action
+            klass.install_action("win.show-system-information", None, |window, _, _| {
+                glib::spawn_future_local(clone!(
+                    #[weak] window,
+                    async move {
+                        match gram::system_information() {
+                            Ok(info) => {
+                                let builder = gtk::Builder::from_resource(
+                                    "/com/github/LG-GramSettings/ui/builder/info_dialog.ui"
+                                );
+
+                                let info_dialog: adw::Dialog = builder.object("info_dialog").unwrap();
+                                let group: adw::PreferencesGroup = builder.object("group").unwrap();
+
+                                let mut iter = info.split("\n");
+                                
+                                while let (Some(label), Some(value)) = (iter.next(), iter.next()) {
+                                    if !label.is_empty() {
+                                        group.add(&adw::ActionRow::builder()
+                                            .title(label)
+                                            .subtitle(value)
+                                            .subtitle_selectable(true)
+                                            .css_classes(["property"])
+                                            .build()
+                                        );
+                                    }
+                                }
+
+                                info_dialog
+                                    .present(Some(window.upcast_ref::<adw::ApplicationWindow>()));
+                            },
+                            Err(error) => {
+                                window.show_toast(&error);
+                            }
+                        };
+                    }
+                ));
+            });
+
+            // Open settings folder action
             klass.install_action("win.open-settings-folder", None, |_, _, _| {
                 let uri = format!("file:///sys/devices/platform/lg-laptop");
 
@@ -62,7 +102,6 @@ mod imp {
                     let _res = desktop.launch_uris(&[&uri], None::<&gio::AppLaunchContext>);
                 }
             });
-
         }
 
         fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {

@@ -11,6 +11,23 @@ pub mod gram {
     const SETTINGS_PATH: &str = "/sys/devices/platform/lg-laptop";
 
     //---------------------------------------
+    // System information function
+    //---------------------------------------
+    pub fn system_information() -> Result<String, String> {
+        let output = Command::new("pkexec")
+            .arg("lg-gram-writer")
+            .arg("--system-info")
+            .output()
+            .map_err(|error| error.to_string())?;
+
+        if !output.status.success() {
+            return Err(String::from_utf8_lossy(&output.stderr).into())
+        }
+
+        Ok(String::from_utf8_lossy(&output.stdout).into())
+    }
+
+    //---------------------------------------
     // Feature function
     //---------------------------------------
     pub fn feature(id: &str) -> Result<String, String> {
