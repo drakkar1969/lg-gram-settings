@@ -8,6 +8,7 @@ pub mod gram {
     //---------------------------------------
     // Constants
     //---------------------------------------
+    const WRITER: &str = "/usr/bin/lg-gram-writer";
     const SETTINGS_PATH: &str = "/sys/devices/platform/lg-laptop";
 
     //---------------------------------------
@@ -15,7 +16,7 @@ pub mod gram {
     //---------------------------------------
     pub fn system_information() -> Result<String, String> {
         let output = Command::new("pkexec")
-            .arg("lg-gram-writer")
+            .arg(WRITER)
             .arg("--system-info")
             .output()
             .map_err(|error| error.to_string())?;
@@ -43,7 +44,7 @@ pub mod gram {
     //---------------------------------------
     pub fn set_feature(id: &str, value: &str) -> Result<String, String> {
         let output = Command::new("pkexec")
-            .arg("lg-gram-writer")
+            .arg(WRITER)
             .arg("--feature")
             .arg(format!("{id}={value}"))
             .output()
@@ -77,7 +78,7 @@ pub mod gram {
     //---------------------------------------
     pub fn enable_service(id: &str, value: u32) -> Result<String, String> {
         let output = Command::new("pkexec")
-            .arg("lg-gram-writer")
+            .arg(WRITER)
             .arg("--service")
             .arg(format!("{id}={value}"))
             .output()
