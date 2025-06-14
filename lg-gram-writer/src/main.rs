@@ -45,18 +45,18 @@ fn main() {
 //---------------------------------------
 fn set_feature(setting: &str, value: &str) -> Result<String, String> {
     // Check if settings file exists
-    let file = format!("/sys/devices/platform/lg-laptop/{}", setting);
+    let file = format!("/sys/devices/platform/lg-laptop/{setting}");
 
     fs::metadata(&file)
         .map_err(|_| String::from("ERROR: Settings file does not exist"))?;
 
     // Write to settings file
-    let content = format!("{}\n", value);
+    let content = format!("{value}\n");
 
     fs::write(file, content)
         .map_err(|_| String::from("ERROR: Error writing to settings file"))?;
 
-    Ok(format!("Successfully changed {} setting", setting))
+    Ok(format!("Successfully changed {setting} setting"))
 }
 
 //---------------------------------------
@@ -64,9 +64,9 @@ fn set_feature(setting: &str, value: &str) -> Result<String, String> {
 //---------------------------------------
 fn enable_service(setting: &str, value: &str) -> Result<String, String> {
     // Check if service unit file exists
-    let service_name = format!("lg-gram-{}.service", setting.replace("_", "-"));
+    let service_name = format!("lg-gram-{}.service", setting.replace('_', "-"));
 
-    let unit_file = format!("/usr/lib/systemd/system/{}", service_name);
+    let unit_file = format!("/usr/lib/systemd/system/{service_name}");
 
     fs::metadata(&unit_file)
         .map_err(|_| String::from("ERROR: Service unit file does not exist"))?;
@@ -95,7 +95,7 @@ fn validate_args(args: &[String]) -> Result<(String, String, String), ()> {
         return Err(());
     }
 
-    let Some((setting, value)) = args[2].split_once("=") else {
+    let Some((setting, value)) = args[2].split_once('=') else {
         return Err(());
     };
 
@@ -107,13 +107,7 @@ fn validate_args(args: &[String]) -> Result<(String, String, String), ()> {
                 ("battery_care_limit", value) if ["80", "100"].contains(&value) => {
                     Ok((mode, String::from(setting), String::from(value)))
                 },
-                ("usb_charge", value) if ["0", "1"].contains(&value) => {
-                    Ok((mode, String::from(setting), String::from(value)))
-                },
-                ("reader_mode", value) if ["0", "1"].contains(&value) => {
-                    Ok((mode, String::from(setting), String::from(value)))
-                },
-                ("fn_lock", value) if ["0", "1"].contains(&value) => {
+                ("fn_lock" | "usb_charge" | "reader_mode", value) if ["0", "1"].contains(&value) => {
                     Ok((mode, String::from(setting), String::from(value)))
                 },
                 _ => {
