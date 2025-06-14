@@ -45,38 +45,29 @@ fn main() {
 // System information function
 //---------------------------------------
 fn system_information() -> Result<String, String> {
-    let dmidecode = |string: &str| -> Result<String, String> {
-        let output = process::Command::new("dmidecode")
-            .arg("-s")
-            .arg(string)
-            .output()
-            .map_err(|error| error.to_string())?;
+    let dmi_read = |string: &str| -> Result<String, String> {
+        let file = format!("/sys/devices/virtual/dmi/id/{string}");
 
-        if !output.status.success() {
-            return Err(String::from_utf8_lossy(&output.stderr).into())
-        }
-
-        Ok(String::from_utf8_lossy(&output.stdout).into())
+        fs::read_to_string(file)
+            .map_err(|error| error.to_string())
+            .map(|value| value.trim().to_owned())
     };
 
-    let product_name = dmidecode("system-product-name")?;
-    let serial_number = dmidecode("system-serial-number")?;
-    let processor_version = dmidecode("processor-version")?;
-    let bios_vendor = dmidecode("bios-vendor")?;
-    let bios_version = dmidecode("bios-version")?;
+    let product_name = dmi_read("product_name")?;
+    let product_serial = dmi_read("product_serial")?;
+    let bios_vendor = dmi_read("bios_vendor")?;
+    let bios_version = dmi_read("bios_version")?;
 
     let output = [
-        String::from("Product Name\n"),
+        String::from("Product Name"),
         product_name,
-        String::from("Serial Number\n"),
-        serial_number,
-        String::from("Processor Version\n"),
-        processor_version,
-        String::from("BIOS Vendor\n"),
+        String::from("Serial Number"),
+        product_serial,
+        String::from("BIOS Vendor"),
         bios_vendor,
-        String::from("BIOS Version\n"),
+        String::from("BIOS Version"),
         bios_version,
-    ].join("");
+    ].join("\n");
 
     Ok(output)
 }
