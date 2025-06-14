@@ -69,7 +69,7 @@ mod imp {
                                 let info_dialog: adw::Dialog = builder.object("info_dialog").unwrap();
                                 let group: adw::PreferencesGroup = builder.object("group").unwrap();
 
-                                let mut iter = info.split("\n");
+                                let mut iter = info.split('\n');
                                 
                                 while let (Some(label), Some(value)) = (iter.next(), iter.next()) {
                                     if !label.is_empty() {
@@ -89,17 +89,17 @@ mod imp {
                             Err(error) => {
                                 window.show_toast(&error);
                             }
-                        };
+                        }
                     }
                 ));
             });
 
             // Open settings folder action
             klass.install_action("win.open-settings-folder", None, |_, _, _| {
-                let uri = format!("file:///sys/devices/platform/lg-laptop");
+                let uri = "file:///sys/devices/platform/lg-laptop";
 
                 if let Some(desktop) = gio::AppInfo::default_for_type("inode/directory", true) {
-                    let _res = desktop.launch_uris(&[&uri], None::<&gio::AppLaunchContext>);
+                    let _res = desktop.launch_uris(&[uri], None::<&gio::AppLaunchContext>);
                 }
             });
         }
