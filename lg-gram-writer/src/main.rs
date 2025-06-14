@@ -23,6 +23,7 @@ fn main() {
 
     // Check mode
     let result = match mode.as_str() {
+        "--system-info" => system_information(),
         "--feature" => set_feature(&setting, &value),
         "--service" => enable_service(&setting, &value),
         _ => unreachable!()
@@ -38,6 +39,40 @@ fn main() {
             process::exit(1);
         }
     }
+}
+
+//---------------------------------------
+// System information function
+//---------------------------------------
+fn system_information() -> Result<String, String> {
+    let dmidecode = |string: &str| -> Result<String, String> {
+        let output = process::Command::new("dmidecode")
+            .arg("-s")
+            .arg(string)
+            .output()
+            .map_err(|error| error.to_string())?;
+
+        if !output.status.success() {
+            return Err(String::from_utf8_lossy(&output.stderr).into())
+        }
+
+        Ok(String::from_utf8_lossy(&output.stdout).into())
+    };
+
+    let manufacturer = dmidecode("system-manufacturer")?;
+    let product_name = dmidecode("system-product-name")?;
+    let serial_number = dmidecode("system-serial-number")?;
+
+    let output = [
+        String::from("Manufacturer\n"),
+        manufacturer,
+        String::from("Product Name\n"),
+        product_name,
+        String::from("Serial Number\n"),
+        serial_number
+    ].join("");
+
+    Ok(output)
 }
 
 //---------------------------------------
@@ -91,18 +126,17 @@ fn enable_service(setting: &str, value: &str) -> Result<String, String> {
 // Validate args function
 //---------------------------------------
 fn validate_args(args: &[String]) -> Result<(String, String, String), ()> {
-    if args.len() != 3 {
-        return Err(());
-    }
-
-    let Some((setting, value)) = args[2].split_once('=') else {
+    let Some(mode) = args.get(1).cloned() else {
         return Err(());
     };
 
-    let mode = args[1].clone();
-
     match mode.as_str() {
+        "--system-info" => { Ok((mode, String::new(), String::new())) } 
         "--feature" => {
+            let Some((setting, value)) = args.get(2).and_then(|arg| arg.split_once('=')) else {
+                return Err(());
+            };
+
             match (setting, value) {
                 ("battery_care_limit", value) if ["80", "100"].contains(&value) => {
                     Ok((mode, String::from(setting), String::from(value)))
@@ -116,6 +150,10 @@ fn validate_args(args: &[String]) -> Result<(String, String, String), ()> {
             }
         },
         "--service" => {
+            let Some((setting, value)) = args.get(2).and_then(|arg| arg.split_once('=')) else {
+                return Err(());
+            };
+
             if ["battery_care_limit", "usb_charge", "reader_mode", "fn_lock"].contains(&setting) &&
                 ["0", "1"].contains(&value)
             {
