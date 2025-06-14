@@ -59,17 +59,23 @@ fn system_information() -> Result<String, String> {
         Ok(String::from_utf8_lossy(&output.stdout).into())
     };
 
-    let manufacturer = dmidecode("system-manufacturer")?;
     let product_name = dmidecode("system-product-name")?;
     let serial_number = dmidecode("system-serial-number")?;
+    let processor_version = dmidecode("processor-version")?;
+    let bios_vendor = dmidecode("bios-vendor")?;
+    let bios_version = dmidecode("bios-version")?;
 
     let output = [
-        String::from("Manufacturer\n"),
-        manufacturer,
         String::from("Product Name\n"),
         product_name,
         String::from("Serial Number\n"),
-        serial_number
+        serial_number,
+        String::from("Processor Version\n"),
+        processor_version,
+        String::from("BIOS Vendor\n"),
+        bios_vendor,
+        String::from("BIOS Version\n"),
+        bios_version,
     ].join("");
 
     Ok(output)
