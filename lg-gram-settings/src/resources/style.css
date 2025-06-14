@@ -3,3 +3,8 @@ button.toggle:checked {
 	background: var(--accent-bg-color);
 	color: var(--accent-fg-color);
 }
+
+/* Separator */
+separator.widget {
+	min-height: 20px;
+}
