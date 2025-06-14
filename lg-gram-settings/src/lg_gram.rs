@@ -13,21 +13,18 @@ pub mod gram {
     //---------------------------------------
     // Feature function
     //---------------------------------------
-    pub fn feature(id: &str) -> Result<u32, String> {
+    pub fn feature(id: &str) -> Result<String, String> {
         let file = format!("{SETTINGS_PATH}/{id}");
 
         fs::read_to_string(file)
             .map_err(|error| error.to_string())
-            .and_then(|value| {
-                value.trim().parse::<u32>()
-                    .map_err(|error| error.to_string())
-            })
+            .map(|value| value.trim().to_owned())
     }
 
     //---------------------------------------
     // Set feature function
     //---------------------------------------
-    pub fn set_feature(id: &str, value: u32) -> Result<String, String> {
+    pub fn set_feature(id: &str, value: &str) -> Result<String, String> {
         let output = Command::new("pkexec")
             .arg("lg-gram-writer")
             .arg("--feature")
@@ -46,7 +43,7 @@ pub mod gram {
     // Is service enabled function
     //---------------------------------------
     pub fn is_service_enabled(id: &str) -> Result<bool, String> {
-        let unit_file = format!("lg-gram-{}.service", id.replace("_", "-"));
+        let unit_file = format!("lg-gram-{}.service", id.replace('_', "-"));
 
         let status = Command::new("systemctl")
             .arg("--quiet")

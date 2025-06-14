@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <!--// MainWindow template //-->
+  <template class="GramSettingWidget" parent="AdwActionRow">
+    <property name="use-underline">true</property>
+    <property name="activatable">true</property>
+    <child type="prefix">
+      <object class="GtkImage" id="icon">
+        <property name="pixel-size">24</property>
+      </object>
+    </child>
+    <child type="suffix">
+      <object class="GtkBox">
+        <property name="spacing">16</property>
+        <child>
+          <object class="AdwToggleGroup" id="toggle_group">
+            <property name="valign">center</property>
+            <style>
+              <class name="round"/>
+            </style>
+            <child>
+              <object class="AdwToggle" id="off_toggle">
+              </object>
+            </child>
+            <child>
+              <object class="AdwToggle" id="on_toggle">
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkSeparator">
+            <property name="margin-top">12</property>
+            <property name="margin-bottom">12</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkToggleButton" id="persistent_button">
+            <property name="valign">center</property>
+            <property name="icon-name">persistent-symbolic</property>
+            <property name="tooltip-text">Make setting persistent over reboots</property>
+            <style>
+              <class name="circular"/>
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

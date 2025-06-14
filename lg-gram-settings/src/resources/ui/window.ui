@@ -39,170 +39,33 @@
                   <object class="AdwPreferencesGroup">
                     <property name="separate-rows">true</property>
                     <child>
-                      <object class="AdwSwitchRow" id="fn_lock_row">
+                      <object class="GramSettingWidget" id="fn_lock_toggle">
+                        <property name="icon-name">gram-fnlock-symbolic</property>
                         <property name="title">Fn _Lock</property>
                         <property name="subtitle">Lock keyboard Fn keys</property>
-                        <property name="use-underline">true</property>
-                        <child type="prefix">
-                          <object class="GtkImage">
-                            <property name="icon-name">gram-fnlock-symbolic</property>
-                            <property name="pixel-size">24</property>
-                          </object>
-                        </child>
-                        <child type="suffix">
-                          <object class="GtkBox">
-                            <property name="spacing">12</property>
-                            <child>
-                              <object class="GtkSeparator">
-                                <property name="margin-start">12</property>
-                                <property name="margin-top">12</property>
-                                <property name="margin-bottom">12</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkToggleButton" id="fn_lock_button">
-                                <property name="valign">center</property>
-                                <property name="icon-name">persistent-symbolic</property>
-                                <style>
-                                  <class name="circular"/>
-                                  <class name="flat"/>
-                                </style>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwComboRow" id="battery_limit_row">
+                      <object class="GramSettingWidget" id="battery_limit_toggle">
+                        <property name="icon-name">gram-battery-symbolic</property>
                         <property name="title">_Battery Care Limit</property>
                         <property name="subtitle">Maximum capacity to charge the battery</property>
-                        <property name="use-underline">true</property>
-                        <property name="model">
-                          <object class="GListStore" id="battery_limit_model">
-                            <property name="item-type">BatteryLimitObject</property>
-                            <child>
-                              <object class="BatteryLimitObject">
-                                <property name="value">100</property>
-                                <property name="description">No charge limit</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="BatteryLimitObject">
-                                <property name="value">80</property>
-                                <property name="description">Limit charge, reduces battery capacity loss over time</property>
-                              </object>
-                            </child>
-                          </object>
-                        </property>
-                        <property name="factory">
-                          <object class="GtkBuilderListItemFactory">
-                            <property name="resource">/com/github/LG-GramSettings/ui/battery_limit_combo/entry-item.ui</property>
-                          </object>
-                        </property>
-                        <property name="list-factory">
-                          <object class="GtkBuilderListItemFactory">
-                            <property name="resource">/com/github/LG-GramSettings/ui/battery_limit_combo/list-item.ui</property>
-                          </object>
-                        </property>
-                        <child type="prefix">
-                          <object class="GtkImage">
-                            <property name="icon-name">gram-battery-symbolic</property>
-                            <property name="pixel-size">24</property>
-                          </object>
-                        </child>
-                        <child type="suffix">
-                          <object class="GtkBox">
-                            <property name="spacing">12</property>
-                            <child>
-                              <object class="GtkSeparator">
-                                <property name="margin-start">12</property>
-                                <property name="margin-top">12</property>
-                                <property name="margin-bottom">12</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkToggleButton" id="battery_limit_button">
-                                <property name="valign">center</property>
-                                <property name="icon-name">persistent-symbolic</property>
-                                <style>
-                                  <class name="circular"/>
-                                  <class name="flat"/>
-                                </style>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
+                        <property name="off-value">100</property>
+                        <property name="on-value">80</property>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwSwitchRow" id="usb_charge_row">
+                      <object class="GramSettingWidget" id="usb_charge_toggle">
+                        <property name="icon-name">gram-usb-symbolic</property>
                         <property name="title">_USB Charge</property>
                         <property name="subtitle">Charge devices from USB ports while the device is turned off</property>
-                        <property name="use-underline">true</property>
-                        <child type="prefix">
-                          <object class="GtkImage">
-                            <property name="icon-name">gram-usb-symbolic</property>
-                            <property name="pixel-size">24</property>
-                          </object>
-                        </child>
-                        <child type="suffix">
-                          <object class="GtkBox">
-                            <property name="spacing">12</property>
-                            <child>
-                              <object class="GtkSeparator">
-                                <property name="margin-start">12</property>
-                                <property name="margin-top">12</property>
-                                <property name="margin-bottom">12</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkToggleButton" id="usb_charge_button">
-                                <property name="valign">center</property>
-                                <property name="icon-name">persistent-symbolic</property>
-                                <style>
-                                  <class name="circular"/>
-                                  <class name="flat"/>
-                                </style>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwSwitchRow" id="reader_mode_row">
+                      <object class="GramSettingWidget" id="reader_mode_toggle">
+                        <property name="icon-name">gram-reader-symbolic</property>
                         <property name="title">_Reader Mode</property>
                         <property name="subtitle">Reduce blue light in screen colors</property>
-                        <property name="use-underline">true</property>
-                        <child type="prefix">
-                          <object class="GtkImage">
-                            <property name="icon-name">gram-reader-symbolic</property>
-                            <property name="pixel-size">24</property>
-                          </object>
-                        </child>
-                        <child type="suffix">
-                          <object class="GtkBox">
-                            <property name="spacing">12</property>
-                            <child>
-                              <object class="GtkSeparator">
-                                <property name="margin-start">12</property>
-                                <property name="margin-top">12</property>
-                                <property name="margin-bottom">12</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkToggleButton" id="reader_mode_button">
-                                <property name="valign">center</property>
-                                <property name="icon-name">persistent-symbolic</property>
-                                <style>
-                                  <class name="circular"/>
-                                  <class name="flat"/>
-                                </style>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
                       </object>
                     </child>
                   </object>
