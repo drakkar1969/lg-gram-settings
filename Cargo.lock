@@ -419,7 +419,7 @@ dependencies = [
 
 [[package]]
 name = "lg-gram-settings"
-version = "0.1.0"
+version = "0.5.0"
 dependencies = [
  "glib-build-tools",
  "gtk4",
@@ -428,7 +428,7 @@ dependencies = [
 
 [[package]]
 name = "lg-gram-writer"
-version = "0.1.0"
+version = "0.5.0"
 dependencies = [
  "nix",
 ]
