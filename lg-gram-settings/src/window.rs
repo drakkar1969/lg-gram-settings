@@ -4,7 +4,7 @@ use adw::prelude::*;
 use glib::{clone, closure_local};
 
 use crate::Application;
-use crate::gram_setting_widget::GramSettingWidget;
+use crate::gram_widget::GramWidget;
 use crate::battery_limit_object::BatteryLimitObject;
 use crate::lg_gram::gram;
 
@@ -32,13 +32,13 @@ mod imp {
         pub(super) toast_overlay: TemplateChild<adw::ToastOverlay>,
 
         #[template_child]
-        pub(super) fn_lock_toggle: TemplateChild<GramSettingWidget>,
+        pub(super) fn_lock_toggle: TemplateChild<GramWidget>,
         #[template_child]
-        pub(super) battery_limit_toggle: TemplateChild<GramSettingWidget>,
+        pub(super) battery_limit_toggle: TemplateChild<GramWidget>,
         #[template_child]
-        pub(super) usb_charge_toggle: TemplateChild<GramSettingWidget>,
+        pub(super) usb_charge_toggle: TemplateChild<GramWidget>,
         #[template_child]
-        pub(super) reader_mode_toggle: TemplateChild<GramSettingWidget>,
+        pub(super) reader_mode_toggle: TemplateChild<GramWidget>,
      }
 
     //---------------------------------------
@@ -169,28 +169,28 @@ impl MainWindow {
 
         imp.fn_lock_toggle.connect_closure("error", false, closure_local!(
             #[weak(rename_to = window)] self,
-            move |_: GramSettingWidget, error: &str| {
+            move |_: GramWidget, error: &str| {
                 window.show_toast(error);
             }
         ));
 
         imp.battery_limit_toggle.connect_closure("error", false, closure_local!(
             #[weak(rename_to = window)] self,
-            move |_: GramSettingWidget, error: &str| {
+            move |_: GramWidget, error: &str| {
                 window.show_toast(error);
             }
         ));
 
         imp.usb_charge_toggle.connect_closure("error", false, closure_local!(
             #[weak(rename_to = window)] self,
-            move |_: GramSettingWidget, error: &str| {
+            move |_: GramWidget, error: &str| {
                 window.show_toast(error);
             }
         ));
 
         imp.reader_mode_toggle.connect_closure("error", false, closure_local!(
             #[weak(rename_to = window)] self,
-            move |_: GramSettingWidget, error: &str| {
+            move |_: GramWidget, error: &str| {
                 window.show_toast(error);
             }
         ));

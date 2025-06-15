@@ -1,6 +1,6 @@
 mod app;
 mod window;
-mod gram_setting_widget;
+mod gram_widget;
 mod lg_gram;
 mod battery_limit_object;
 

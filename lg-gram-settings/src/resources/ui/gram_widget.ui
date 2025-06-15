@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <!--// MainWindow template //-->
-  <template class="GramSettingWidget" parent="AdwActionRow">
+  <!--// GramWidget template //-->
+  <template class="GramWidget" parent="AdwActionRow">
     <property name="use-underline">true</property>
     <property name="activatable">true</property>
     <child type="prefix">

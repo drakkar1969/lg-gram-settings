@@ -13,7 +13,7 @@
     <file compressed="true" preprocess="xml-stripblanks">ui/battery_limit_combo/entry-item.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/battery_limit_combo/list-item.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/builder/info_dialog.ui</file>
-    <file compressed="true" preprocess="xml-stripblanks">ui/gram_setting_widget.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/gram_widget.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/window.ui</file>
   </gresource>
 </gresources>

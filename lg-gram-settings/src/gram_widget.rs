@@ -10,7 +10,7 @@ use glib::subclass::Signal;
 use crate::lg_gram::gram;
 
 //------------------------------------------------------------------------------
-// MODULE: GramSettingWidget
+// MODULE: GramWidget
 //------------------------------------------------------------------------------
 mod imp {
     use super::*;
@@ -19,9 +19,9 @@ mod imp {
     // Private structure
     //---------------------------------------
     #[derive(Default, gtk::CompositeTemplate, glib::Properties)]
-    #[properties(wrapper_type = super::GramSettingWidget)]
-    #[template(resource = "/com/github/LG-GramSettings/ui/gram_setting_widget.ui")]
-    pub struct GramSettingWidget {
+    #[properties(wrapper_type = super::GramWidget)]
+    #[template(resource = "/com/github/LG-GramSettings/ui/gram_widget.ui")]
+    pub struct GramWidget {
         #[template_child]
         pub(super) icon: TemplateChild<gtk::Image>,
         #[template_child]
@@ -50,9 +50,9 @@ mod imp {
     // Subclass
     //---------------------------------------
     #[glib::object_subclass]
-    impl ObjectSubclass for GramSettingWidget {
-        const NAME: &'static str = "GramSettingWidget";
-        type Type = super::GramSettingWidget;
+    impl ObjectSubclass for GramWidget {
+        const NAME: &'static str = "GramWidget";
+        type Type = super::GramWidget;
         type ParentType = adw::ActionRow;
 
         fn class_init(klass: &mut Self::Class) {
@@ -130,7 +130,7 @@ mod imp {
     }
 
     #[glib::derived_properties]
-    impl ObjectImpl for GramSettingWidget {
+    impl ObjectImpl for GramWidget {
         //---------------------------------------
         // Signals
         //---------------------------------------
@@ -155,23 +155,23 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for GramSettingWidget {}
-    impl ListBoxRowImpl for GramSettingWidget {}
-    impl PreferencesRowImpl for GramSettingWidget {}
-    impl ActionRowImpl for GramSettingWidget {}
+    impl WidgetImpl for GramWidget {}
+    impl ListBoxRowImpl for GramWidget {}
+    impl PreferencesRowImpl for GramWidget {}
+    impl ActionRowImpl for GramWidget {}
 }
 
 //------------------------------------------------------------------------------
-// IMPLEMENTATION: GramSettingWidget
+// IMPLEMENTATION: GramWidget
 //------------------------------------------------------------------------------
 glib::wrapper! {
-    pub struct GramSettingWidget(ObjectSubclass<imp::GramSettingWidget>)
+    pub struct GramWidget(ObjectSubclass<imp::GramWidget>)
         @extends gtk::Widget, gtk::ListBoxRow, adw::PreferencesRow, adw::ActionRow,
         @implements gtk::Accessible, gtk::Actionable, gtk::Buildable,
                     gtk::ConstraintTarget;
 }
 
-impl GramSettingWidget {
+impl GramWidget {
     //---------------------------------------
     // Setup widgets
     //---------------------------------------
