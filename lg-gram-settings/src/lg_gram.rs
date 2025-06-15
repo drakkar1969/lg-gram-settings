@@ -10,7 +10,7 @@ pub mod gram {
     //---------------------------------------
     // Constants
     //---------------------------------------
-    const WRITER: &str = "/usr/bin/lg-gram-writer";
+    const WRITER: &str = "/usr/share/lg-gram-settings/lg-gram-writer";
     const SETTINGS_PATH: &str = "/sys/devices/platform/lg-laptop";
 
     //---------------------------------------
