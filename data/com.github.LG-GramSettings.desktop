@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=LG Gram Settings
+GenericName=Settings Utility
+Comment=Utility to modify LG Gram kernel features
+Exec=/usr/bin/lg-gram-settings
+Terminal=false
+Type=Application
+StartupNotify=false
+Categories=GTK;GNOME;System;Settings
