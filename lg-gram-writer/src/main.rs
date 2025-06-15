@@ -22,10 +22,10 @@ fn main() {
     };
 
     // Check mode
-    let result = match mode.as_str() {
+    let result = match mode {
         "--system-info" => system_information(),
-        "--feature" => set_feature(&setting, &value),
-        "--service" => enable_service(&setting, &value),
+        "--feature" => set_feature(setting, value),
+        "--service" => enable_service(setting, value),
         _ => unreachable!()
     };
 
@@ -122,13 +122,13 @@ fn enable_service(setting: &str, value: &str) -> Result<String, String> {
 //---------------------------------------
 // Validate args function
 //---------------------------------------
-fn validate_args(args: &[String]) -> Result<(String, String, String), ()> {
-    let Some(mode) = args.get(1).cloned() else {
+fn validate_args<'a>(args: &'a [String]) -> Result<(&'a str, &'a str, &'a str), ()> {
+    let Some(mode) = args.get(1) else {
         return Err(());
     };
 
     match mode.as_str() {
-        "--system-info" => { Ok((mode, String::new(), String::new())) } 
+        "--system-info" => { Ok((mode, "", "")) } 
         "--feature" => {
             let Some((setting, value)) = args.get(2).and_then(|arg| arg.split_once('=')) else {
                 return Err(());
@@ -136,10 +136,10 @@ fn validate_args(args: &[String]) -> Result<(String, String, String), ()> {
 
             match (setting, value) {
                 ("battery_care_limit", value) if ["80", "100"].contains(&value) => {
-                    Ok((mode, String::from(setting), String::from(value)))
+                    Ok((mode, setting, value))
                 },
                 ("fn_lock" | "usb_charge" | "reader_mode", value) if ["0", "1"].contains(&value) => {
-                    Ok((mode, String::from(setting), String::from(value)))
+                    Ok((mode, setting, value))
                 },
                 _ => {
                     Err(())
@@ -154,7 +154,7 @@ fn validate_args(args: &[String]) -> Result<(String, String, String), ()> {
             if ["battery_care_limit", "usb_charge", "reader_mode", "fn_lock"].contains(&setting) &&
                 ["0", "1"].contains(&value)
             {
-                Ok((mode, String::from(setting), String::from(value)))
+                Ok((mode, setting, value))
             } else {
                 Err(())
             }
