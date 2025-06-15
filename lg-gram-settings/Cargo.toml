@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 adw = { version = "0.7", package = "libadwaita", features = ["v1_7"] }
+async-process = "2.3.1"
 gtk = { version = "0.9", package = "gtk4", features = ["v4_18"] }
 
 [build-dependencies]

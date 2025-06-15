@@ -5,6 +5,8 @@ pub mod gram {
     use std::fs;
     use std::process::Command;
 
+    use async_process::Command as AsyncCommand;
+
     //---------------------------------------
     // Constants
     //---------------------------------------
@@ -14,11 +16,12 @@ pub mod gram {
     //---------------------------------------
     // System information function
     //---------------------------------------
-    pub fn system_information() -> Result<String, String> {
-        let output = Command::new("pkexec")
+    pub async fn system_information_async() -> Result<String, String> {
+        let output = AsyncCommand::new("pkexec")
             .arg(WRITER)
             .arg("--system-info")
             .output()
+            .await
             .map_err(|error| error.to_string())?;
 
         if !output.status.success() {
@@ -42,12 +45,13 @@ pub mod gram {
     //---------------------------------------
     // Set feature function
     //---------------------------------------
-    pub fn set_feature(id: &str, value: &str) -> Result<String, String> {
-        let output = Command::new("pkexec")
+    pub async fn set_feature_async(id: &str, value: &str) -> Result<String, String> {
+        let output = AsyncCommand::new("pkexec")
             .arg(WRITER)
             .arg("--feature")
             .arg(format!("{id}={value}"))
             .output()
+            .await
             .map_err(|error| error.to_string())?;
 
         if !output.status.success() {
@@ -76,12 +80,13 @@ pub mod gram {
     //---------------------------------------
     // Enable service function
     //---------------------------------------
-    pub fn enable_service(id: &str, value: u32) -> Result<String, String> {
-        let output = Command::new("pkexec")
+    pub async fn enable_service_async(id: &str, value: u32) -> Result<String, String> {
+        let output = AsyncCommand::new("pkexec")
             .arg(WRITER)
             .arg("--service")
             .arg(format!("{id}={value}"))
             .output()
+            .await
             .map_err(|error| error.to_string())?;
 
         if !output.status.success() {

@@ -57,6 +57,71 @@ mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
+
+            // Gram set feature action async
+            klass.install_action_async("gram.set-feature-async",
+                Some(&String::static_variant_type()),
+                async |widget, _, parameter| {
+                    if let Some(id) = parameter.and_then(|param| param.get::<Vec<String>>())
+                        .and_then(|params| params.first().cloned())
+                    {
+                        let imp = widget.imp();
+
+                        if imp.is_feature_reverting.get() {
+                            imp.is_feature_reverting.set(false);
+                            return
+                        }
+
+                        let group = imp.toggle_group.get();
+
+                        if let Ok(value) = group.toggle(group.active())
+                            .and_then(|toggle| toggle.label())
+                            .ok_or_else(|| String::from("Error: no valid selection"))
+                        {
+                            let result = gram::set_feature_async(&id, &value).await;
+
+                            if let Err(error) = result {
+                                imp.is_feature_reverting.set(true);
+                                widget.invert_toggle_group();
+
+                                widget.emit_error_signal(&error);
+                            } else if group.active() == 0 {
+                                imp.persistent_button.set_active(false);
+                            }
+                        }
+
+                        imp.persistent_button.set_sensitive(group.active() != 0);
+                    }
+                }
+            );
+
+            // Gram enable service action async
+            klass.install_action_async("gram.enable-service-async",
+                Some(&String::static_variant_type()),
+                async |widget, _, parameter| {
+                    if let Some(id) = parameter.and_then(|param| param.get::<Vec<String>>())
+                        .and_then(|params| params.first().cloned())
+                    {
+                        let imp = widget.imp();
+
+                        if imp.is_persistent_reverting.get() {
+                            imp.is_persistent_reverting.set(false);
+                            return
+                        }
+
+                        let button = imp.persistent_button.get();
+
+                        let value = u32::from(button.is_active());
+
+                        if let Err(error) = gram::enable_service_async(&id, value).await {
+                            imp.is_persistent_reverting.set(true);
+                            button.set_active(!button.is_active());
+
+                            widget.emit_error_signal(&error);
+                        }
+                    }
+                }
+            );
         }
 
         fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
@@ -156,61 +221,32 @@ impl GramSettingWidget {
         // Toggle group active property notify signal
         imp.toggle_group.connect_active_notify(clone!(
             #[weak(rename_to = widget)] self,
-            move |group| {
-                let imp = widget.imp();
+            move |_| {
+                let id = widget.imp().id.get();
 
-                let Some(id) = imp.id.get() else {
+                if id.is_none() {
                     widget.emit_error_signal("Error: setting ID not initialized");
                     return
-                };
-
-                if imp.is_feature_reverting.get() {
-                    imp.is_feature_reverting.set(false);
-                    return
                 }
 
-                let result = group.toggle(group.active())
-                    .and_then(|toggle| toggle.label())
-                    .ok_or_else(|| String::from("Error: no valid selection"))
-                    .and_then(|value| gram::set_feature(id, &value));
-
-                if let Err(error) = result {
-                    imp.is_feature_reverting.set(true);
-                    widget.invert_toggle_group();
-
-                    widget.emit_error_signal(&error);
-                } else if group.active() == 0 {
-                    imp.persistent_button.set_active(false);
-                }
-
-                imp.persistent_button.set_sensitive(group.active() != 0);
+                widget.activate_action("gram.set-feature-async", Some(&id.to_variant()))
+                    .unwrap();
             }
         ));
 
         // Persistent button toggled signal
         imp.persistent_button.connect_toggled(clone!(
             #[weak(rename_to = widget)] self,
-            move |button| {
-                let imp = widget.imp();
+            move |_| {
+                let id = widget.imp().id.get();
 
-                let Some(id) = imp.id.get() else {
+                if id.is_none() {
                     widget.emit_error_signal("Error: setting ID not initialized");
                     return
-                };
-
-                if imp.is_persistent_reverting.get() {
-                    imp.is_persistent_reverting.set(false);
-                    return
                 }
 
-                let value = u32::from(button.is_active());
-
-                if let Err(error) = gram::enable_service(id, value) {
-                    imp.is_persistent_reverting.set(true);
-                    button.set_active(!button.is_active());
-
-                    widget.emit_error_signal(&error);
-                }
+                widget.activate_action("gram.enable-service-async", Some(&id.to_variant()))
+                    .unwrap();
             }
         ));
     }
@@ -234,7 +270,6 @@ impl GramSettingWidget {
                     .position(|s| s == value)
                     .ok_or_else(|| String::from("unknown value"))
             });
-
 
         match &active_index {
             Ok(index) => {
