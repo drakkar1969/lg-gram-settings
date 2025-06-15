@@ -39,19 +39,19 @@
                   <object class="AdwPreferencesGroup">
                     <property name="separate-rows">true</property>
                     <child>
+                      <object class="GramWidget" id="battery_limit_toggle">
+                        <property name="icon-name">gram-battery-symbolic</property>
+                        <property name="title">_Battery Care Limit</property>
+                        <property name="subtitle">Limit maximum battery charge to reduce battery capacity loss over time</property>
+                        <property name="off-value">100</property>
+                        <property name="on-value">80</property>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GramWidget" id="fn_lock_toggle">
                         <property name="icon-name">gram-fnlock-symbolic</property>
                         <property name="title">Fn _Lock</property>
                         <property name="subtitle">Lock keyboard Fn keys</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GramWidget" id="battery_limit_toggle">
-                        <property name="icon-name">gram-battery-symbolic</property>
-                        <property name="title">_Battery Care Limit</property>
-                        <property name="subtitle">Maximum capacity to charge the battery</property>
-                        <property name="off-value">100</property>
-                        <property name="on-value">80</property>
                       </object>
                     </child>
                     <child>

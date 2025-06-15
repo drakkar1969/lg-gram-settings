@@ -31,9 +31,9 @@ mod imp {
         pub(super) toast_overlay: TemplateChild<adw::ToastOverlay>,
 
         #[template_child]
-        pub(super) fn_lock_toggle: TemplateChild<GramWidget>,
-        #[template_child]
         pub(super) battery_limit_toggle: TemplateChild<GramWidget>,
+        #[template_child]
+        pub(super) fn_lock_toggle: TemplateChild<GramWidget>,
         #[template_child]
         pub(super) usb_charge_toggle: TemplateChild<GramWidget>,
         #[template_child]
@@ -164,14 +164,14 @@ impl MainWindow {
     fn setup_signals(&self) {
         let imp = self.imp();
 
-        imp.fn_lock_toggle.connect_closure("error", false, closure_local!(
+        imp.battery_limit_toggle.connect_closure("error", false, closure_local!(
             #[weak(rename_to = window)] self,
             move |_: GramWidget, error: &str| {
                 window.show_toast(error);
             }
         ));
 
-        imp.battery_limit_toggle.connect_closure("error", false, closure_local!(
+        imp.fn_lock_toggle.connect_closure("error", false, closure_local!(
             #[weak(rename_to = window)] self,
             move |_: GramWidget, error: &str| {
                 window.show_toast(error);
@@ -202,9 +202,9 @@ impl MainWindow {
             async move {
                 let imp = window.imp();
 
-                imp.fn_lock_toggle.init_id(FN_LOCK);
-
                 imp.battery_limit_toggle.init_id(BATTERY_LIMIT);
+
+                imp.fn_lock_toggle.init_id(FN_LOCK);
 
                 imp.usb_charge_toggle.init_id(USB_CHARGE);
 
