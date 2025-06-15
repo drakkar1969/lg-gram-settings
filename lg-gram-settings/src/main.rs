@@ -8,7 +8,7 @@ use gtk::prelude::*;
 
 use app::Application;
 
-const APP_ID: &str = "com.github.LG-GramSettings";
+const APP_ID: &str = "com.github.LGGramSettings";
 
 fn main() -> glib::ExitCode {
     // Register and include resources

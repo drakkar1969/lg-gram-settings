@@ -25,7 +25,7 @@ mod imp {
     // Private structure
     //---------------------------------------
     #[derive(Default, gtk::CompositeTemplate)]
-    #[template(resource = "/com/github/LG-GramSettings/ui/window.ui")]
+    #[template(resource = "/com/github/LGGramSettings/ui/window.ui")]
     pub struct MainWindow {
         #[template_child]
         pub(super) toast_overlay: TemplateChild<adw::ToastOverlay>,
@@ -57,7 +57,7 @@ mod imp {
                 match gram::system_information_async().await {
                     Ok(info) => {
                         let builder = gtk::Builder::from_resource(
-                            "/com/github/LG-GramSettings/ui/builder/info_dialog.ui"
+                            "/com/github/LGGramSettings/ui/builder/info_dialog.ui"
                         );
 
                         let info_dialog: adw::Dialog = builder.object("info_dialog").unwrap();

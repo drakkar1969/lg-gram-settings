@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
-  <gresource prefix="/com/github/LG-GramSettings/icons/scalable/actions/">
+  <gresource prefix="/com/github/LGGramSettings/icons/scalable/actions/">
     <file alias="gram-logo-symbolic.svg">icons/gram-logo-symbolic.svg</file>
     <file alias="gram-battery-symbolic.svg">icons/gram-battery-symbolic.svg</file>
     <file alias="gram-fnlock-symbolic.svg">icons/gram-fnlock-symbolic.svg</file>
@@ -8,7 +8,7 @@
     <file alias="gram-usb-symbolic.svg">icons/gram-usb-symbolic.svg</file>
     <file alias="persistent-symbolic.svg">icons/persistent-symbolic.svg</file>
   </gresource>
-  <gresource prefix="/com/github/LG-GramSettings/">
+  <gresource prefix="/com/github/LGGramSettings/">
     <file compressed="true">style.css</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/builder/info_dialog.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/gram_widget.ui</file>

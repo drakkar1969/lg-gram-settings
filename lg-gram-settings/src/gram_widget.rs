@@ -20,7 +20,7 @@ mod imp {
     //---------------------------------------
     #[derive(Default, gtk::CompositeTemplate, glib::Properties)]
     #[properties(wrapper_type = super::GramWidget)]
-    #[template(resource = "/com/github/LG-GramSettings/ui/gram_widget.ui")]
+    #[template(resource = "/com/github/LGGramSettings/ui/gram_widget.ui")]
     pub struct GramWidget {
         #[template_child]
         pub(super) icon: TemplateChild<gtk::Image>,
