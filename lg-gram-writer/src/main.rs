@@ -122,7 +122,7 @@ fn enable_service(setting: &str, value: &str) -> Result<String, String> {
 //---------------------------------------
 // Validate args function
 //---------------------------------------
-fn validate_args<'a>(args: &'a [String]) -> Result<(&'a str, &'a str, &'a str), ()> {
+fn validate_args(args: &[String]) -> Result<(&str, &str, &str), ()> {
     let Some(mode) = args.get(1) else {
         return Err(());
     };
