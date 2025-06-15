@@ -13,7 +13,7 @@
       <object class="GtkBox">
         <property name="spacing">16</property>
         <child>
-          <object class="AdwToggleGroup" id="toggle_group">
+          <object class="AdwToggleGroup" id="feature_group">
             <property name="valign">center</property>
             <style>
               <class name="round"/>
