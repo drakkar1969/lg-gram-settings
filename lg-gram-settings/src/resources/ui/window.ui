@@ -83,7 +83,7 @@
     <section>
       <item>
         <attribute name="label">Show System Information</attribute>
-        <attribute name="action">win.show-system-information</attribute>
+        <attribute name="action">win.show-system-info-async</attribute>
       </item>
       <item>
         <attribute name="label">Open Settings Folder</attribute>
