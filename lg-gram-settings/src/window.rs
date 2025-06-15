@@ -65,16 +65,14 @@ mod imp {
 
                         let mut iter = info.split('\n');
 
-                        while let (Some(label), Some(value)) = (iter.next(), iter.next()) {
-                            if !label.is_empty() {
-                                group.add(&adw::ActionRow::builder()
-                                    .title(label)
-                                    .subtitle(value)
-                                    .subtitle_selectable(true)
-                                    .css_classes(["property"])
-                                    .build()
-                                );
-                            }
+                        while let Some((label, value)) = iter.next().zip(iter.next()) {
+                            group.add(&adw::ActionRow::builder()
+                                .title(label)
+                                .subtitle(value)
+                                .subtitle_selectable(true)
+                                .css_classes(["property"])
+                                .build()
+                            );
                         }
 
                         info_dialog
