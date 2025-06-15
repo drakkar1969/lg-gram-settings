@@ -2,7 +2,6 @@ mod app;
 mod window;
 mod gram_widget;
 mod lg_gram;
-mod battery_limit_object;
 
 use gtk::{gio, glib};
 use gtk::prelude::*;

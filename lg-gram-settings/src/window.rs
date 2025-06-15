@@ -5,7 +5,6 @@ use glib::{clone, closure_local};
 
 use crate::Application;
 use crate::gram_widget::GramWidget;
-use crate::battery_limit_object::BatteryLimitObject;
 use crate::lg_gram::gram;
 
 //------------------------------------------------------------------------------
@@ -51,8 +50,6 @@ mod imp {
         type ParentType = adw::ApplicationWindow;
 
         fn class_init(klass: &mut Self::Class) {
-            BatteryLimitObject::ensure_type();
-
             klass.bind_template();
 
             // Show system information action async
