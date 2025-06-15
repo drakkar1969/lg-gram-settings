@@ -86,10 +86,7 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
 
-            let obj = self.obj();
-
-            obj.setup_widgets();
-            obj.setup_signals();
+            self.obj().setup_widgets();
         }
     }
 
@@ -162,28 +159,31 @@ impl GramSettingWidget {
             move |group| {
                 let imp = widget.imp();
 
-                if let Some(id) = imp.id.get() {
-                    if imp.is_feature_reverting.get() {
-                        imp.is_feature_reverting.set(false);
-                        return
-                    }
+                let Some(id) = imp.id.get() else {
+                    widget.emit_error_signal("Error: setting ID not initialized");
+                    return
+                };
 
-                    let result = group.toggle(group.active())
-                        .and_then(|toggle| toggle.label())
-                        .ok_or_else(|| String::from("Error: no valid selection"))
-                        .and_then(|value| gram::set_feature(id, &value));
-
-                    if let Err(error) = result {
-                        imp.is_feature_reverting.set(true);
-                        widget.invert_toggle_group();
-
-                        widget.emit_error_signal(&error);
-                    } else if group.active() == 0 {
-                        imp.persistent_button.set_active(false);
-                    }
-
-                    imp.persistent_button.set_sensitive(group.active() != 0);
+                if imp.is_feature_reverting.get() {
+                    imp.is_feature_reverting.set(false);
+                    return
                 }
+
+                let result = group.toggle(group.active())
+                    .and_then(|toggle| toggle.label())
+                    .ok_or_else(|| String::from("Error: no valid selection"))
+                    .and_then(|value| gram::set_feature(id, &value));
+
+                if let Err(error) = result {
+                    imp.is_feature_reverting.set(true);
+                    widget.invert_toggle_group();
+
+                    widget.emit_error_signal(&error);
+                } else if group.active() == 0 {
+                    imp.persistent_button.set_active(false);
+                }
+
+                imp.persistent_button.set_sensitive(group.active() != 0);
             }
         ));
 
@@ -193,21 +193,23 @@ impl GramSettingWidget {
             move |button| {
                 let imp = widget.imp();
 
-                if let Some(id) = imp.id.get() {
-                    if imp.is_persistent_reverting.get() {
-                        imp.is_persistent_reverting.set(false);
-                        return
-                    }
+                let Some(id) = imp.id.get() else {
+                    widget.emit_error_signal("Error: setting ID not initialized");
+                    return
+                };
 
-                    let value = u32::from(button.is_active());
+                if imp.is_persistent_reverting.get() {
+                    imp.is_persistent_reverting.set(false);
+                    return
+                }
 
-                    if let Err(error) = gram::enable_service(id, value) {
-                        imp.is_persistent_reverting.set(true);
-                        button.set_active(!button.is_active());
+                let value = u32::from(button.is_active());
 
-                        widget.emit_error_signal(&error);
-                    }
+                if let Err(error) = gram::enable_service(id, value) {
+                    imp.is_persistent_reverting.set(true);
+                    button.set_active(!button.is_active());
 
+                    widget.emit_error_signal(&error);
                 }
             }
         ));
@@ -244,6 +246,8 @@ impl GramSettingWidget {
                         imp.persistent_button.set_active(state);
 
                         imp.id.set(id.to_owned()).unwrap();
+
+                        self.setup_signals();
                     },
                     Err(error) => {
                         imp.persistent_button.set_sensitive(false);
