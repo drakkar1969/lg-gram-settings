@@ -16,7 +16,7 @@ fn main() {
     // Validate args
     let args: Vec<String> = env::args().collect();
 
-    let Ok((mode, setting, value)) = validate_args(&args) else {
+    let Ok((mode, setting, value, enable)) = validate_args(&args) else {
         eprint_usage(&args[0]);
         process::exit(1);
     };
@@ -24,8 +24,7 @@ fn main() {
     // Check mode
     let result = match mode {
         "--system-info" => system_information(),
-        "--feature" => set_feature(setting, value),
-        "--service" => enable_service(setting, value),
+        "--feature" => set_feature(setting, value, enable),
         _ => unreachable!()
     };
 
@@ -75,26 +74,13 @@ fn system_information() -> Result<String, String> {
 //---------------------------------------
 // Set feature function
 //---------------------------------------
-fn set_feature(setting: &str, value: &str) -> Result<String, String> {
+fn set_feature(setting: &str, value: &str, enable: &str) -> Result<String, String> {
     // Check if settings file exists
-    let file = format!("/sys/devices/platform/lg-laptop/{setting}");
+    let settings_file = format!("/sys/devices/platform/lg-laptop/{setting}");
 
-    fs::metadata(&file)
+    fs::metadata(&settings_file)
         .map_err(|_| String::from("ERROR: Settings file does not exist"))?;
 
-    // Write to settings file
-    let content = format!("{value}\n");
-
-    fs::write(file, content)
-        .map_err(|_| String::from("ERROR: Error writing to settings file"))?;
-
-    Ok(format!("Successfully changed {setting} setting"))
-}
-
-//---------------------------------------
-// Enable service function
-//---------------------------------------
-fn enable_service(setting: &str, value: &str) -> Result<String, String> {
     // Check if service unit file exists
     let service_name = format!("lg-gram-{}.service", setting.replace('_', "-"));
 
@@ -103,9 +89,13 @@ fn enable_service(setting: &str, value: &str) -> Result<String, String> {
     fs::metadata(&unit_file)
         .map_err(|_| String::from("ERROR: Service unit file does not exist"))?;
 
-    // Enable/disable service
-    let enable = if value == "0" { "disable" } else { "enable" };
+    // Write to settings file
+    let content = format!("{value}\n");
 
+    fs::write(settings_file, content)
+        .map_err(|_| String::from("ERROR: Error writing to settings file"))?;
+
+    // Enable/disable service
     let output = process::Command::new("systemctl")
         .arg(enable)
         .arg(&service_name)
@@ -116,19 +106,19 @@ fn enable_service(setting: &str, value: &str) -> Result<String, String> {
         return Err(String::from_utf8_lossy(&output.stderr).into())
     }
 
-    Ok(format!("Successfully {enable}d {service_name}"))
+    Ok(format!("Successfully changed {setting} setting"))
 }
 
 //---------------------------------------
 // Validate args function
 //---------------------------------------
-fn validate_args(args: &[String]) -> Result<(&str, &str, &str), ()> {
+fn validate_args(args: &[String]) -> Result<(&str, &str, &str, &str), ()> {
     let Some(mode) = args.get(1) else {
         return Err(());
     };
 
     match mode.as_str() {
-        "--system-info" => { Ok((mode, "", "")) } 
+        "--system-info" => { Ok((mode, "", "", "")) } 
         "--feature" => {
             let Some((setting, value)) = args.get(2).and_then(|arg| arg.split_once('=')) else {
                 return Err(());
@@ -136,27 +126,18 @@ fn validate_args(args: &[String]) -> Result<(&str, &str, &str), ()> {
 
             match (setting, value) {
                 ("battery_care_limit", value) if ["80", "100"].contains(&value) => {
-                    Ok((mode, setting, value))
+                    let enable = if value == "100" { "disable" } else { "enable" };
+
+                    Ok((mode, setting, value, enable))
                 },
                 ("fn_lock" | "usb_charge" | "reader_mode", value) if ["0", "1"].contains(&value) => {
-                    Ok((mode, setting, value))
+                    let enable = if value == "0" { "disable" } else { "enable" };
+
+                    Ok((mode, setting, value, enable))
                 },
                 _ => {
                     Err(())
                 }
-            }
-        },
-        "--service" => {
-            let Some((setting, value)) = args.get(2).and_then(|arg| arg.split_once('=')) else {
-                return Err(());
-            };
-
-            if ["battery_care_limit", "usb_charge", "reader_mode", "fn_lock"].contains(&setting) &&
-                ["0", "1"].contains(&value)
-            {
-                Ok((mode, setting, value))
-            } else {
-                Err(())
             }
         },
         _ => {
