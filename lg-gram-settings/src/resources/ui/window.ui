@@ -42,7 +42,7 @@
                       <object class="GramWidget" id="battery_limit_toggle">
                         <property name="icon-name">gram-battery-symbolic</property>
                         <property name="title">_Battery Care Limit</property>
-                        <property name="subtitle">Limit maximum battery charge to reduce capacity loss over time</property>
+                        <property name="subtitle">Limit battery charge to reduce capacity loss over time</property>
                         <property name="off-value">100</property>
                         <property name="on-value">80</property>
                       </object>

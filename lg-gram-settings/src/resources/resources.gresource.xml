@@ -6,10 +6,8 @@
     <file alias="gram-fnlock-symbolic.svg">icons/gram-fnlock-symbolic.svg</file>
     <file alias="gram-reader-symbolic.svg">icons/gram-reader-symbolic.svg</file>
     <file alias="gram-usb-symbolic.svg">icons/gram-usb-symbolic.svg</file>
-    <file alias="persistent-symbolic.svg">icons/persistent-symbolic.svg</file>
   </gresource>
   <gresource prefix="/com/github/LGGramSettings/">
-    <file compressed="true">style.css</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/builder/info_dialog.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/gram_widget.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/window.ui</file>

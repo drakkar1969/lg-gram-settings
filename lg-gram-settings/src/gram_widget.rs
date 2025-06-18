@@ -30,8 +30,6 @@ mod imp {
         pub(super) off_toggle: TemplateChild<adw::Toggle>,
         #[template_child]
         pub(super) on_toggle: TemplateChild<adw::Toggle>,
-        #[template_child]
-        pub(super) persistent_button: TemplateChild<gtk::ToggleButton>,
 
         #[property(get, set, nullable)]
         icon_name: RefCell<Option<String>>,
@@ -43,7 +41,6 @@ mod imp {
         pub(super) id: OnceCell<String>,
 
         pub(super) is_feature_reverting: Cell<bool>,
-        pub(super) is_persistent_reverting: Cell<bool>,
     }
 
     //---------------------------------------
@@ -83,36 +80,7 @@ mod imp {
                             widget.invert_feature_group();
 
                             widget.emit_error_signal(&error);
-                        } else if group.active() == 0 {
-                            imp.persistent_button.set_active(false);
                         }
-                    }
-
-                    imp.persistent_button.set_sensitive(group.active() != 0);
-                }
-            });
-
-            // Gram enable service action async
-            klass.install_action_async("gram.enable-service-async", None, async |widget, _, param| {
-                if let Some(id) = param.and_then(|param| param.get::<Vec<String>>())
-                    .and_then(|params| params.first().cloned())
-                {
-                    let imp = widget.imp();
-
-                    if imp.is_persistent_reverting.get() {
-                        imp.is_persistent_reverting.set(false);
-                        return
-                    }
-
-                    let button = imp.persistent_button.get();
-
-                    let value = u32::from(button.is_active());
-
-                    if let Err(error) = gram::enable_service_async(&id, value).await {
-                        imp.is_persistent_reverting.set(true);
-                        button.set_active(!button.is_active());
-
-                        widget.emit_error_signal(&error);
                     }
                 }
             });
@@ -227,22 +195,6 @@ impl GramWidget {
                     .unwrap();
             }
         ));
-
-        // Persistent button toggled signal
-        imp.persistent_button.connect_toggled(clone!(
-            #[weak(rename_to = widget)] self,
-            move |_| {
-                let id = widget.imp().id.get();
-
-                if id.is_none() {
-                    widget.emit_error_signal("Error: setting ID not initialized");
-                    return
-                }
-
-                widget.activate_action("gram.enable-service-async", Some(&id.to_variant()))
-                    .unwrap();
-            }
-        ));
     }
 
     //---------------------------------------
@@ -264,25 +216,12 @@ impl GramWidget {
             Ok(index) => {
                 imp.feature_group.set_active(index as u32);
 
-                match gram::is_service_enabled(id) {
-                    Ok(state) => {
-                        imp.persistent_button.set_sensitive(index != 0);
-                        imp.persistent_button.set_active(state);
+                imp.id.set(id.to_owned()).unwrap();
 
-                        imp.id.set(id.to_owned()).unwrap();
-
-                        self.setup_signals();
-                    },
-                    Err(error) => {
-                        imp.persistent_button.set_sensitive(false);
-
-                        self.emit_error_signal(&format!("Failed to load {id} service status: {error}"));
-                    }
-                }
+                self.setup_signals();
             },
             Err(error) => {
                 imp.feature_group.set_sensitive(false);
-                imp.persistent_button.set_sensitive(false);
 
                 self.emit_error_signal(&format!("Failed to read {id} value: {error}"));
             }
