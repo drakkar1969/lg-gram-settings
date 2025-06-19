@@ -79,7 +79,7 @@ fn set_feature(setting: &str, value: &str, enable: &str) -> Result<String, Strin
     let settings_file = format!("/sys/devices/platform/lg-laptop/{setting}");
 
     fs::metadata(&settings_file)
-        .map_err(|_| String::from("ERROR: Settings file does not exist"))?;
+        .map_err(|_| String::from("ERROR: {setting} setting file not found"))?;
 
     // Check if service unit file exists
     let service_name = format!("lg-gram-{}.service", setting.replace('_', "-"));
@@ -87,13 +87,13 @@ fn set_feature(setting: &str, value: &str, enable: &str) -> Result<String, Strin
     let unit_file = format!("/usr/lib/systemd/system/{service_name}");
 
     fs::metadata(&unit_file)
-        .map_err(|_| String::from("ERROR: Service unit file does not exist"))?;
+        .map_err(|_| String::from("ERROR: {service_name} unit file not found"))?;
 
     // Write to settings file
     let content = format!("{value}\n");
 
     fs::write(settings_file, content)
-        .map_err(|_| String::from("ERROR: Error writing to settings file"))?;
+        .map_err(|_| String::from("ERROR: Error writing to {setting} setting file"))?;
 
     // Enable/disable service
     let output = process::Command::new("systemctl")
