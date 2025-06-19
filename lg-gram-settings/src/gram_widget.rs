@@ -210,13 +210,17 @@ impl GramWidget {
                 imp.feature_group.toggles().iter::<adw::Toggle>()
                     .flatten()
                     .filter_map(|toggle| toggle.label())
-                    .position(|s| s == value)
+                    .position(|label| label == value)
                     .ok_or_else(|| String::from("unknown value"))
+            })
+            .and_then(|index| {
+                u32::try_from(index)
+                    .map_err(|error| error.to_string())
             });
 
         match active_index {
             Ok(index) => {
-                imp.feature_group.set_active(index as u32);
+                imp.feature_group.set_active(index);
 
                 imp.id.set(id.to_owned()).unwrap();
 
