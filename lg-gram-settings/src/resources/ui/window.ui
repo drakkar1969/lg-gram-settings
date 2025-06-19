@@ -39,7 +39,7 @@
                   <object class="AdwPreferencesGroup">
                     <property name="separate-rows">true</property>
                     <child>
-                      <object class="GramWidget" id="battery_limit_toggle">
+                      <object class="GramWidget" id="battery_limit_widget">
                         <property name="icon-name">gram-battery-symbolic</property>
                         <property name="title">_Battery Care Limit</property>
                         <property name="subtitle">Limit battery charge to reduce capacity loss over time</property>
@@ -48,21 +48,21 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GramWidget" id="fn_lock_toggle">
+                      <object class="GramWidget" id="fn_lock_widget">
                         <property name="icon-name">gram-fnlock-symbolic</property>
                         <property name="title">Fn _Lock</property>
                         <property name="subtitle">Lock keyboard Fn keys</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GramWidget" id="usb_charge_toggle">
+                      <object class="GramWidget" id="usb_charge_widget">
                         <property name="icon-name">gram-usb-symbolic</property>
                         <property name="title">_USB Charge</property>
                         <property name="subtitle">Charge devices from USB ports while the device is turned off</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GramWidget" id="reader_mode_toggle">
+                      <object class="GramWidget" id="reader_mode_widget">
                         <property name="icon-name">gram-reader-symbolic</property>
                         <property name="title">_Reader Mode</property>
                         <property name="subtitle">Reduce blue light in screen colors</property>

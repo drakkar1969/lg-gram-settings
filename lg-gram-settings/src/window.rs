@@ -31,13 +31,13 @@ mod imp {
         pub(super) toast_overlay: TemplateChild<adw::ToastOverlay>,
 
         #[template_child]
-        pub(super) battery_limit_toggle: TemplateChild<GramWidget>,
+        pub(super) battery_limit_widget: TemplateChild<GramWidget>,
         #[template_child]
-        pub(super) fn_lock_toggle: TemplateChild<GramWidget>,
+        pub(super) fn_lock_widget: TemplateChild<GramWidget>,
         #[template_child]
-        pub(super) usb_charge_toggle: TemplateChild<GramWidget>,
+        pub(super) usb_charge_widget: TemplateChild<GramWidget>,
         #[template_child]
-        pub(super) reader_mode_toggle: TemplateChild<GramWidget>,
+        pub(super) reader_mode_widget: TemplateChild<GramWidget>,
      }
 
     //---------------------------------------
@@ -161,28 +161,28 @@ impl MainWindow {
     fn setup_signals(&self) {
         let imp = self.imp();
 
-        imp.battery_limit_toggle.connect_closure("error", false, closure_local!(
+        imp.battery_limit_widget.connect_closure("error", false, closure_local!(
             #[weak(rename_to = window)] self,
             move |_: GramWidget, error: &str| {
                 window.show_toast(error);
             }
         ));
 
-        imp.fn_lock_toggle.connect_closure("error", false, closure_local!(
+        imp.fn_lock_widget.connect_closure("error", false, closure_local!(
             #[weak(rename_to = window)] self,
             move |_: GramWidget, error: &str| {
                 window.show_toast(error);
             }
         ));
 
-        imp.usb_charge_toggle.connect_closure("error", false, closure_local!(
+        imp.usb_charge_widget.connect_closure("error", false, closure_local!(
             #[weak(rename_to = window)] self,
             move |_: GramWidget, error: &str| {
                 window.show_toast(error);
             }
         ));
 
-        imp.reader_mode_toggle.connect_closure("error", false, closure_local!(
+        imp.reader_mode_widget.connect_closure("error", false, closure_local!(
             #[weak(rename_to = window)] self,
             move |_: GramWidget, error: &str| {
                 window.show_toast(error);
@@ -199,13 +199,13 @@ impl MainWindow {
             async move {
                 let imp = window.imp();
 
-                imp.battery_limit_toggle.init_id(BATTERY_LIMIT);
+                imp.battery_limit_widget.init_id(BATTERY_LIMIT);
 
-                imp.fn_lock_toggle.init_id(FN_LOCK);
+                imp.fn_lock_widget.init_id(FN_LOCK);
 
-                imp.usb_charge_toggle.init_id(USB_CHARGE);
+                imp.usb_charge_widget.init_id(USB_CHARGE);
 
-                imp.reader_mode_toggle.init_id(READER_MODE);
+                imp.reader_mode_widget.init_id(READER_MODE);
             }
         ));
     }
