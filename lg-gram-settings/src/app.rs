@@ -94,6 +94,7 @@ impl Application {
 
                 let about_dialog = adw::AboutDialog::builder()
                     .application_name("LG Gram Settings")
+                    .application_icon("lg-gram-settings")
                     .developer_name("draKKar1969")
                     .version(env!("CARGO_PKG_VERSION"))
                     .website("https://github.com/drakkar1969/lg-gram")
