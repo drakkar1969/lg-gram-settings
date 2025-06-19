@@ -36,6 +36,9 @@ pub mod gram {
     pub fn feature(id: &str) -> Result<String, String> {
         let file = format!("{SETTINGS_PATH}/{id}");
 
+        fs::metadata(&file)
+            .map_err(|_| String::from("file not found"))?;
+
         fs::read_to_string(file)
             .map_err(|error| error.to_string())
             .map(|value| value.trim().to_owned())
