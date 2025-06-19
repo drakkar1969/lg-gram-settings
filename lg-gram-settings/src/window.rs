@@ -1,4 +1,4 @@
-use gtk::{gio, glib};
+use gtk::{gio, glib, pango};
 use adw::subclass::prelude::*;
 use adw::prelude::*;
 use glib::{clone, closure_local};
@@ -144,6 +144,7 @@ impl MainWindow {
     fn show_toast(&self, error: &str) {
         let label = gtk::Label::builder()
             .label(error.trim())
+            .ellipsize(pango::EllipsizeMode::End)
             .css_classes(["heading", "warning"])
             .build();
 

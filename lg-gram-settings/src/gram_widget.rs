@@ -233,7 +233,7 @@ impl GramWidget {
                 self.set_sensitive(true);
             },
             Err(error) => {
-                self.emit_error_signal(&format!("Failed to read {id} value: {error}"));
+                self.emit_error_signal(&format!("Failed to read {id}: {error}"));
             }
         }
     }
