@@ -40,7 +40,7 @@ mod imp {
 
         pub(super) id: OnceCell<String>,
 
-        pub(super) is_feature_reverting: Cell<bool>,
+        pub(super) is_reverting: Cell<bool>,
     }
 
     //---------------------------------------
@@ -59,31 +59,37 @@ mod imp {
             klass.install_action_async("gram.set-feature-async",
                 Some(&String::static_variant_type()),
                 async |widget, _, param| {
-                    if let Some(id) = param.and_then(|param| param.get::<String>()) {
-                        let imp = widget.imp();
+                    let imp = widget.imp();
 
-                        if imp.is_feature_reverting.get() {
-                            imp.is_feature_reverting.set(false);
-                            return
-                        }
+                    if imp.is_reverting.get() {
+                        imp.is_reverting.set(false);
+                        return
+                    }
 
-                        let group = imp.feature_group.get();
+                    let Some(id) = param.and_then(|param| param.get::<String>()) else {
+                        widget.emit_error_signal("ERROR: setting ID not initialized");
+                        return
+                    };
 
-                        if let Ok(value) = group.toggle(group.active())
-                            .and_then(|toggle| toggle.label())
-                            .ok_or_else(|| String::from("Error: no valid selection"))
-                        {
+                    let group = imp.feature_group.get();
+
+                    match group.toggle(group.active())
+                        .and_then(|toggle| toggle.label())
+                        .ok_or_else(|| String::from("ERROR: no valid selection"))
+                    {
+                        Ok(value) => {
                             let result = gram::set_feature_async(&id, &value).await;
 
                             if let Err(error) = result {
-                                imp.is_feature_reverting.set(true);
+                                imp.is_reverting.set(true);
                                 widget.invert_feature_group();
 
                                 widget.emit_error_signal(&error);
                             }
+                        },
+                        Err(error) => {
+                            widget.emit_error_signal(&error);
                         }
-                    } else {
-                        widget.emit_error_signal("Error: setting ID not initialized");
                     }
                 }
             );
