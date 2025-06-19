@@ -116,7 +116,10 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
 
-            self.obj().setup_widgets();
+            let obj = self.obj();
+
+            obj.setup_widgets();
+            obj.setup_signals();
         }
     }
 
@@ -187,9 +190,11 @@ impl GramWidget {
         imp.feature_group.connect_active_notify(clone!(
             #[weak(rename_to = widget)] self,
             move |_| {
-                let id_variant = widget.imp().id.get().map(ToVariant::to_variant);
+                if widget.is_sensitive() {
+                    let id_variant = widget.imp().id.get().map(ToVariant::to_variant);
 
-                widget.activate_action("gram.set-feature-async", id_variant.as_ref()).unwrap();
+                    widget.activate_action("gram.set-feature-async", id_variant.as_ref()).unwrap();
+                }
             }
         ));
     }
@@ -215,11 +220,9 @@ impl GramWidget {
 
                 imp.id.set(id.to_owned()).unwrap();
 
-                self.setup_signals();
+                self.set_sensitive(true);
             },
             Err(error) => {
-                imp.feature_group.set_sensitive(false);
-
                 self.emit_error_signal(&format!("Failed to read {id} value: {error}"));
             }
         }
