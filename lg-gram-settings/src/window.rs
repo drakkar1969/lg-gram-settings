@@ -75,8 +75,7 @@ mod imp {
                             );
                         }
 
-                        info_dialog
-                            .present(Some(window.upcast_ref::<adw::ApplicationWindow>()));
+                        info_dialog.present(Some(&window));
                     },
                     Err(error) => {
                         window.show_toast(&error);

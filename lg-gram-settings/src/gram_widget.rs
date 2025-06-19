@@ -56,34 +56,37 @@ mod imp {
             klass.bind_template();
 
             // Gram set feature action async
-            klass.install_action_async("gram.set-feature-async", None, async |widget, _, param| {
-                if let Some(id) = param.and_then(|param| param.get::<Vec<String>>())
-                    .and_then(|params| params.first().cloned())
-                {
-                    let imp = widget.imp();
+            klass.install_action_async("gram.set-feature-async",
+                Some(&String::static_variant_type()),
+                async |widget, _, param| {
+                    if let Some(id) = param.and_then(|param| param.get::<String>()) {
+                        let imp = widget.imp();
 
-                    if imp.is_feature_reverting.get() {
-                        imp.is_feature_reverting.set(false);
-                        return
-                    }
-
-                    let group = imp.feature_group.get();
-
-                    if let Ok(value) = group.toggle(group.active())
-                        .and_then(|toggle| toggle.label())
-                        .ok_or_else(|| String::from("Error: no valid selection"))
-                    {
-                        let result = gram::set_feature_async(&id, &value).await;
-
-                        if let Err(error) = result {
-                            imp.is_feature_reverting.set(true);
-                            widget.invert_feature_group();
-
-                            widget.emit_error_signal(&error);
+                        if imp.is_feature_reverting.get() {
+                            imp.is_feature_reverting.set(false);
+                            return
                         }
+
+                        let group = imp.feature_group.get();
+
+                        if let Ok(value) = group.toggle(group.active())
+                            .and_then(|toggle| toggle.label())
+                            .ok_or_else(|| String::from("Error: no valid selection"))
+                        {
+                            let result = gram::set_feature_async(&id, &value).await;
+
+                            if let Err(error) = result {
+                                imp.is_feature_reverting.set(true);
+                                widget.invert_feature_group();
+
+                                widget.emit_error_signal(&error);
+                            }
+                        }
+                    } else {
+                        widget.emit_error_signal("Error: setting ID not initialized");
                     }
                 }
-            });
+            );
         }
 
         fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
@@ -184,15 +187,9 @@ impl GramWidget {
         imp.feature_group.connect_active_notify(clone!(
             #[weak(rename_to = widget)] self,
             move |_| {
-                let id = widget.imp().id.get();
+                let id_variant = widget.imp().id.get().map(ToVariant::to_variant);
 
-                if id.is_none() {
-                    widget.emit_error_signal("Error: setting ID not initialized");
-                    return
-                }
-
-                widget.activate_action("gram.set-feature-async", Some(&id.to_variant()))
-                    .unwrap();
+                widget.activate_action("gram.set-feature-async", id_variant.as_ref()).unwrap();
             }
         ));
     }
