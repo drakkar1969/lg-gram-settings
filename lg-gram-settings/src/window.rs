@@ -79,7 +79,7 @@ mod imp {
             klass.bind_template();
 
             // Show system information action async
-            klass.install_action_async("win.show-system-info-async", None, async |window, _, _| {
+            klass.install_action_async("win.show-system-info", None, async |window, _, _| {
                 match gram::system_information_async().await {
                     Ok(info) => {
                         let builder = gtk::Builder::from_resource(
