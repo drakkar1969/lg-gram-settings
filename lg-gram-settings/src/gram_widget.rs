@@ -1,10 +1,8 @@
 use std::cell::{RefCell, OnceCell};
-use std::sync::OnceLock;
 
 use gtk::glib;
 use adw::subclass::prelude::*;
 use adw::prelude::*;
-use glib::subclass::Signal;
 
 use crate::lg_gram::gram;
 
@@ -50,17 +48,17 @@ mod imp {
             klass.install_action_async("gram.set-feature", Some(glib::VariantTy::STRING),
                 async |widget, _, param| {
                     let Some(id) = widget.imp().id.get() else {
-                        widget.emit_error_signal("ERROR: setting ID not initialized");
+                        widget.throw_error("ERROR: setting ID not initialized");
                         return
                     };
 
                     let Some(value) = param.and_then(|param| param.get::<String>()) else {
-                        widget.emit_error_signal("ERROR: failed to get variant value");
+                        widget.throw_error("ERROR: failed to get variant value");
                         return
                     };
 
                     if let Err(error) = gram::set_feature_async(&id, &value).await {
-                        widget.emit_error_signal(&error);
+                        widget.throw_error(&error);
                     }
                 }
             );
@@ -73,20 +71,6 @@ mod imp {
 
     #[glib::derived_properties]
     impl ObjectImpl for GramWidget {
-        //---------------------------------------
-        // Signals
-        //---------------------------------------
-        fn signals() -> &'static [Signal] {
-            static SIGNALS: OnceLock<Vec<Signal>> = OnceLock::new();
-            SIGNALS.get_or_init(|| {
-                vec![
-                    Signal::builder("error")
-                        .param_types([String::static_type()])
-                        .build()
-                ]
-            })
-        }
-
         //---------------------------------------
         // Constructor
         //---------------------------------------
@@ -131,13 +115,6 @@ impl GramWidget {
     }
 
     //---------------------------------------
-    // Helper function
-    //---------------------------------------
-    fn emit_error_signal(&self, error: &str) {
-        self.emit_by_name::<()>("error", &[&error]);
-    }
-
-    //---------------------------------------
     // Setup signals
     //---------------------------------------
     fn setup_signals(&self) {
@@ -153,6 +130,13 @@ impl GramWidget {
                 }
 
         });
+    }
+
+    //---------------------------------------
+    // Helper function
+    //---------------------------------------
+    fn throw_error(&self, error: &str) {
+        self.activate_action("win.show-error-toast", Some(&error.to_variant())).unwrap();
     }
 
     //---------------------------------------
@@ -179,7 +163,7 @@ impl GramWidget {
                 self.set_sensitive(true);
             },
             Err(error) => {
-                self.emit_error_signal(&format!("Failed to read {id}: {error}"));
+                self.throw_error(&format!("Failed to read {id}: {error}"));
             }
         }
     }

@@ -1,7 +1,6 @@
 use gtk::{gio, glib, pango};
 use adw::subclass::prelude::*;
 use adw::prelude::*;
-use glib::closure_local;
 
 use crate::Application;
 use crate::gram_widget::GramWidget;
@@ -45,6 +44,8 @@ pub enum OnOff {
 // MODULE: MainWindow
 //------------------------------------------------------------------------------
 mod imp {
+    use gtk::glib::VariantTy;
+
     use super::*;
 
     //---------------------------------------
@@ -78,6 +79,27 @@ mod imp {
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
 
+            // Show error toast action
+            klass.install_action("win.show-error-toast", Some(VariantTy::STRING),
+                |window, _, param| {
+                    let error = param.and_then(|param| param.get::<String>())
+                        .unwrap_or_else(|| String::from("ERROR: unknown error"));
+
+                    let label = gtk::Label::builder()
+                        .label(error.trim())
+                        .ellipsize(pango::EllipsizeMode::End)
+                        .css_classes(["heading", "warning"])
+                        .build();
+
+                    let toast = adw::Toast::builder()
+                        .priority(adw::ToastPriority::High)
+                        .custom_title(&label)
+                        .build();
+
+                    window.imp().toast_overlay.add_toast(toast);
+                }
+            );
+
             // Show system information action async
             klass.install_action_async("win.show-system-info", None, async |window, _, _| {
                 match gram::system_information_async().await {
@@ -104,7 +126,7 @@ mod imp {
                         info_dialog.present(Some(&window));
                     },
                     Err(error) => {
-                        window.show_toast(&error);
+                        gtk::prelude::WidgetExt::activate_action(&window, "win.show-error-toast", Some(&error.to_variant())).unwrap();
                     }
                 }
             });
@@ -131,10 +153,7 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
 
-            let obj = self.obj();
-
-            obj.setup_signals();
-            obj.init_kernel_features();
+            self.obj().init_kernel_features();
         }
     }
 
@@ -162,59 +181,6 @@ impl MainWindow {
         glib::Object::builder()
             .property("application", app)
             .build()
-    }
-
-    //---------------------------------------
-    // Show toast helper function
-    //---------------------------------------
-    fn show_toast(&self, error: &str) {
-        let label = gtk::Label::builder()
-            .label(error.trim())
-            .ellipsize(pango::EllipsizeMode::End)
-            .css_classes(["heading", "warning"])
-            .build();
-
-        let toast = adw::Toast::builder()
-            .priority(adw::ToastPriority::High)
-            .custom_title(&label)
-            .build();
-
-        self.imp().toast_overlay.add_toast(toast);
-    }
-
-    //---------------------------------------
-    // Setup signals
-    //---------------------------------------
-    fn setup_signals(&self) {
-        let imp = self.imp();
-
-        imp.battery_limit_widget.connect_closure("error", false, closure_local!(
-            #[weak(rename_to = window)] self,
-            move |_: GramWidget, error: &str| {
-                window.show_toast(error);
-            }
-        ));
-
-        imp.fn_lock_widget.connect_closure("error", false, closure_local!(
-            #[weak(rename_to = window)] self,
-            move |_: GramWidget, error: &str| {
-                window.show_toast(error);
-            }
-        ));
-
-        imp.usb_charge_widget.connect_closure("error", false, closure_local!(
-            #[weak(rename_to = window)] self,
-            move |_: GramWidget, error: &str| {
-                window.show_toast(error);
-            }
-        ));
-
-        imp.reader_mode_widget.connect_closure("error", false, closure_local!(
-            #[weak(rename_to = window)] self,
-            move |_: GramWidget, error: &str| {
-                window.show_toast(error);
-            }
-        ));
     }
 
     //---------------------------------------
