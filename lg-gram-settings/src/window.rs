@@ -1,7 +1,7 @@
 use gtk::{gio, glib, pango};
 use adw::subclass::prelude::*;
 use adw::prelude::*;
-use glib::{clone, closure_local};
+use glib::closure_local;
 
 use crate::Application;
 use crate::gram_widget::GramWidget;
@@ -14,6 +14,32 @@ const BATTERY_LIMIT: &str = "battery_care_limit";
 const FN_LOCK: &str = "fn_lock";
 const READER_MODE: &str = "reader_mode";
 const USB_CHARGE: &str = "usb_charge";
+
+//------------------------------------------------------------------------------
+// ENUM: BatteryCareLimit
+//------------------------------------------------------------------------------
+#[derive(Default, Debug, Clone, Copy, glib::Enum)]
+#[repr(u32)]
+#[enum_type(name = "BatteryCareLimit")]
+pub enum BatteryCareLimit {
+    #[default]
+    #[enum_value(name = "No Limit")]
+    NoLimit = 100,
+    #[enum_value(name = "Limit to 80%")]
+    Limit80 = 80
+}
+
+//------------------------------------------------------------------------------
+// ENUM: OnOff
+//------------------------------------------------------------------------------
+#[derive(Default, Debug, Clone, Copy, glib::Enum)]
+#[repr(u32)]
+#[enum_type(name = "OnOff")]
+pub enum OnOff {
+    #[default]
+    Disabled = 0,
+    Enabled = 1
+}
 
 //------------------------------------------------------------------------------
 // MODULE: MainWindow
@@ -195,19 +221,11 @@ impl MainWindow {
     // Init kernel features
     //---------------------------------------
     fn init_kernel_features(&self) {
-        glib::spawn_future_local(clone!(
-            #[weak(rename_to = window)] self,
-            async move {
-                let imp = window.imp();
+        let imp = self.imp();
 
-                imp.battery_limit_widget.init_id(BATTERY_LIMIT);
-
-                imp.fn_lock_widget.init_id(FN_LOCK);
-
-                imp.usb_charge_widget.init_id(USB_CHARGE);
-
-                imp.reader_mode_widget.init_id(READER_MODE);
-            }
-        ));
+        imp.battery_limit_widget.init(BATTERY_LIMIT, BatteryCareLimit::static_type());
+        imp.fn_lock_widget.init(FN_LOCK, OnOff::static_type());
+        imp.reader_mode_widget.init(READER_MODE, OnOff::static_type());
+        imp.usb_charge_widget.init(USB_CHARGE, OnOff::static_type());
     }
 }

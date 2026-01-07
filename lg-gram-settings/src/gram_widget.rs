@@ -1,10 +1,9 @@
-use std::cell::{Cell, RefCell, OnceCell};
+use std::cell::{RefCell, OnceCell};
 use std::sync::OnceLock;
 
 use gtk::glib;
 use adw::subclass::prelude::*;
 use adw::prelude::*;
-use glib::clone;
 use glib::subclass::Signal;
 
 use crate::lg_gram::gram;
@@ -24,12 +23,6 @@ mod imp {
     pub struct GramWidget {
         #[template_child]
         pub(super) icon: TemplateChild<gtk::Image>,
-        #[template_child]
-        pub(super) feature_group: TemplateChild<adw::ToggleGroup>,
-        #[template_child]
-        pub(super) off_toggle: TemplateChild<adw::Toggle>,
-        #[template_child]
-        pub(super) on_toggle: TemplateChild<adw::Toggle>,
 
         #[property(get, set, nullable)]
         icon_name: RefCell<Option<String>>,
@@ -39,8 +32,6 @@ mod imp {
         on_value: RefCell<Option<String>>,
 
         pub(super) id: OnceCell<String>,
-
-        pub(super) is_reverting: Cell<bool>,
     }
 
     //---------------------------------------
@@ -50,46 +41,26 @@ mod imp {
     impl ObjectSubclass for GramWidget {
         const NAME: &'static str = "GramWidget";
         type Type = super::GramWidget;
-        type ParentType = adw::ActionRow;
+        type ParentType = adw::ComboRow;
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
 
-            // Gram set feature action async
-            klass.install_action_async("gram.set-feature-async",
-                Some(&String::static_variant_type()),
+            // Gram set feature action
+            klass.install_action_async("gram.set-feature", Some(glib::VariantTy::STRING),
                 async |widget, _, param| {
-                    let imp = widget.imp();
-
-                    if imp.is_reverting.get() {
-                        imp.is_reverting.set(false);
-                        return
-                    }
-
-                    let Some(id) = param.and_then(|param| param.get::<String>()) else {
+                    let Some(id) = widget.imp().id.get() else {
                         widget.emit_error_signal("ERROR: setting ID not initialized");
                         return
                     };
 
-                    let group = imp.feature_group.get();
+                    let Some(value) = param.and_then(|param| param.get::<String>()) else {
+                        widget.emit_error_signal("ERROR: failed to get variant value");
+                        return
+                    };
 
-                    match group.toggle(group.active())
-                        .and_then(|toggle| toggle.label())
-                        .ok_or_else(|| String::from("ERROR: no valid selection"))
-                    {
-                        Ok(value) => {
-                            let result = gram::set_feature_async(&id, &value).await;
-
-                            if let Err(error) = result {
-                                imp.is_reverting.set(true);
-                                widget.invert_feature_group();
-
-                                widget.emit_error_signal(&error);
-                            }
-                        },
-                        Err(error) => {
-                            widget.emit_error_signal(&error);
-                        }
+                    if let Err(error) = gram::set_feature_async(&id, &value).await {
+                        widget.emit_error_signal(&error);
                     }
                 }
             );
@@ -133,6 +104,7 @@ mod imp {
     impl ListBoxRowImpl for GramWidget {}
     impl PreferencesRowImpl for GramWidget {}
     impl ActionRowImpl for GramWidget {}
+    impl ComboRowImpl for GramWidget {}
 }
 
 //------------------------------------------------------------------------------
@@ -140,7 +112,7 @@ mod imp {
 //------------------------------------------------------------------------------
 glib::wrapper! {
     pub struct GramWidget(ObjectSubclass<imp::GramWidget>)
-        @extends gtk::Widget, gtk::ListBoxRow, adw::PreferencesRow, adw::ActionRow,
+        @extends gtk::Widget, gtk::ListBoxRow, adw::PreferencesRow, adw::ActionRow, adw::ComboRow,
         @implements gtk::Accessible, gtk::Actionable, gtk::Buildable,
                     gtk::ConstraintTarget;
 }
@@ -156,27 +128,11 @@ impl GramWidget {
             .sync_create()
             .bidirectional()
             .build();
-
-        self.bind_property("off-value", &imp.off_toggle.get(), "label")
-            .sync_create()
-            .bidirectional()
-            .build();
-
-        self.bind_property("on-value", &imp.on_toggle.get(), "label")
-            .sync_create()
-            .bidirectional()
-            .build();
     }
 
     //---------------------------------------
-    // Helper functions
+    // Helper function
     //---------------------------------------
-    fn invert_feature_group(&self) {
-        let feature_group = &self.imp().feature_group;
-
-        feature_group.set_active(1 - feature_group.active());
-    }
-
     fn emit_error_signal(&self, error: &str) {
         self.emit_by_name::<()>("error", &[&error]);
     }
@@ -185,50 +141,40 @@ impl GramWidget {
     // Setup signals
     //---------------------------------------
     fn setup_signals(&self) {
-        let imp = self.imp();
+        // Selected item property notify signal
+        self.connect_selected_item_notify(|widget| {
+            let id = widget.imp().id.get();
 
-        // Activated signal
-        self.connect_activated(|widget| {
-            widget.invert_feature_group();
-        });
+            if id.is_some() && let Some(item) = widget.selected_item()
+                .and_downcast::<adw::EnumListItem>() {
+                    let variant = item.value().to_string().to_variant();
 
-        // Feature group active property notify signal
-        imp.feature_group.connect_active_notify(clone!(
-            #[weak(rename_to = widget)] self,
-            move |_| {
-                if widget.is_sensitive() {
-                    let id_variant = widget.imp().id.get().map(ToVariant::to_variant);
-
-                    widget.activate_action("gram.set-feature-async", id_variant.as_ref()).unwrap();
+                    widget.activate_action("gram.set-feature", Some(&variant)).unwrap();
                 }
-            }
-        ));
+
+        });
     }
 
     //---------------------------------------
-    // Init ID function
+    // Init function
     //---------------------------------------
-    pub fn init_id(&self, id: &str) {
-        let imp = self.imp();
+    pub fn init(&self, id: &str, enum_type: glib::Type) {
+        let model = adw::EnumListModel::new(enum_type);
+
+        self.set_model(Some(&model));
 
         let active_index = gram::feature(id)
             .and_then(|value| {
-                imp.feature_group.toggles().iter::<adw::Toggle>()
-                    .flatten()
-                    .filter_map(|toggle| toggle.label())
-                    .position(|label| label == value)
+                model.iter::<adw::EnumListItem>().flatten()
+                    .position(|item| Ok(item.value()) == value.parse::<i32>())
                     .ok_or_else(|| String::from("unknown value"))
-            })
-            .and_then(|index| {
-                u32::try_from(index)
-                    .map_err(|error| error.to_string())
             });
 
         match active_index {
             Ok(index) => {
-                imp.feature_group.set_active(index);
+                self.set_selected(index as u32);
 
-                imp.id.set(id.to_owned()).unwrap();
+                self.imp().id.set(id.to_owned()).unwrap();
 
                 self.set_sensitive(true);
             },
