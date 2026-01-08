@@ -68,6 +68,13 @@
                         <property name="subtitle">Reduce blue light in screen colors</property>
                       </object>
                     </child>
+                    <child>
+                      <object class="GramWidget" id="fan_mode_widget">
+                        <property name="icon-name">gram-fan-symbolic</property>
+                        <property name="title">_Fan Mode</property>
+                        <property name="subtitle">Set fan mode</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>

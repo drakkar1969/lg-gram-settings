@@ -81,49 +81,54 @@ fn set_feature(setting: &str, value: &str, enable: bool) -> Result<String, Strin
     let settings_file = format!("/sys/devices/platform/lg-laptop/{setting}");
 
     fs::metadata(&settings_file)
-        .map_err(|_| String::from("ERROR: {setting} setting file not found"))?;
+        .map_err(|_| format!("ERROR: {setting} setting file not found"))?;
 
     // Check if service unit file exists
-    let (unit_file, service_name) = if enable {
-        let service_name = format!("lg_gram_{setting}_{value}.service");
+    let service_name = format!("lg_gram_{setting}_{value}.service");
 
-        (format!("/usr/lib/systemd/system/{service_name}"), service_name)
-    } else {
-        glob(&format!("/etc/systemd/system/**/lg_gram_{setting}_*.service")).ok()
-            .map(|paths| {
-                paths.into_iter()
-                    .flatten()
-                    .map(|path| {
-                        (
-                            path.display().to_string(),
-                            path.file_name().unwrap_or_default().to_string_lossy().into()
-                        )
-                    })
-                    .collect::<Vec<_>>()
-            })
-            .filter(|vec| vec.len() == 1)
-            .and_then(|vec| vec.first().map(ToOwned::to_owned))
-            .unwrap_or_else(|| (String::from("None"), String::from("None")))
-    };
+    if enable {
+        let unit_file = format!("/usr/lib/systemd/system/{service_name}");
 
-    fs::metadata(&unit_file)
-        .map_err(|_| String::from("ERROR: {service_name} unit file not found"))?;
+        fs::metadata(&unit_file)
+            .map_err(|_| format!("ERROR: {service_name} unit file not found"))?;
+    }
+
+    // Disable enabled services
+    for service in glob(&format!("/etc/systemd/system/**/lg_gram_{setting}_*.service"))
+        .expect("Failed to read glob pattern")
+        .into_iter()
+        .flatten()
+        .map(|path| path.file_name().unwrap_or_default().to_string_lossy().to_string())
+        .collect::<Vec<String>>() {
+            let output = process::Command::new("systemctl")
+                .arg("disable")
+                .arg(service)
+                .output()
+                .map_err(|error| error.to_string())?;
+
+            if !output.status.success() {
+                return Err(String::from_utf8_lossy(&output.stderr).into())
+            }
+        }
 
     // Write to settings file
     let content = format!("{value}\n");
 
     fs::write(settings_file, content)
-        .map_err(|_| String::from("ERROR: Error writing to {setting} setting file"))?;
+        .map_err(|_| format!("ERROR: Error writing to {setting} setting file"))?;
 
-    // Enable/disable service
-    let output = process::Command::new("systemctl")
-        .arg(if enable { "enable" } else { "disable" })
-        .arg(&service_name)
-        .output()
-        .map_err(|error| error.to_string())?;
+    // Enable service if necessary
+    if enable {
+        let output = process::Command::new("systemctl")
+            .arg("enable")
+            .arg(service_name)
+            .output()
+            .map_err(|error| error.to_string())?;
 
-    if !output.status.success() {
-        return Err(String::from_utf8_lossy(&output.stderr).into())
+        if !output.status.success() {
+            return Err(String::from_utf8_lossy(&output.stderr).into())
+        }
+
     }
 
     Ok(format!("Successfully changed {setting} setting"))
@@ -149,6 +154,9 @@ fn validate_args(args: &[String]) -> Result<(&str, &str, &str, bool), ()> {
                     Ok((mode, setting, value, value != "100"))
                 },
                 ("fn_lock" | "usb_charge" | "reader_mode", value) if ["0", "1"].contains(&value) => {
+                    Ok((mode, setting, value, value != "0"))
+                },
+                ("fan_mode", value) if ["0", "1", "2"].contains(&value) => {
                     Ok((mode, setting, value, value != "0"))
                 },
                 _ => {

@@ -1,0 +1,11 @@
+[Unit]
+Description=Set Silent Fan mode for LG Gram
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/bin/sh -c 'echo "1" | tee /sys/devices/platform/lg-laptop/fan_mode'
+
+[Install]
+WantedBy=multi-user.target
