@@ -1,3 +1,7 @@
 image:disabled {
 	opacity: 0.5;
 }
+
+row.combo listview {
+	font-weight: bold;
+}

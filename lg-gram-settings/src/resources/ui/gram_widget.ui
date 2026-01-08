@@ -9,7 +9,7 @@
     </property>
     <child type="prefix">
       <object class="GtkImage" id="icon">
-        <property name="pixel-size">24</property>
+        <property name="pixel-size">32</property>
       </object>
     </child>
   </template>

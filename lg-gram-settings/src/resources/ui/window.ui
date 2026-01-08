@@ -58,7 +58,7 @@
                       <object class="GramWidget" id="usb_charge_widget">
                         <property name="icon-name">gram-usb-symbolic</property>
                         <property name="title">_USB Charge</property>
-                        <property name="subtitle">Charge devices from USB ports while the device is turned off</property>
+                        <property name="subtitle">Charge devices from USB ports when device is turned off</property>
                       </object>
                     </child>
                     <child>
