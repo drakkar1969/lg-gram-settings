@@ -3,6 +3,8 @@ use std::process;
 use std::fs;
 use std::path::Path;
 
+use glob::glob;
+
 //------------------------------------------------------------------------------
 // APP: main
 //------------------------------------------------------------------------------
@@ -74,7 +76,7 @@ fn system_information() -> Result<String, String> {
 //---------------------------------------
 // Set feature function
 //---------------------------------------
-fn set_feature(setting: &str, value: &str, enable: &str) -> Result<String, String> {
+fn set_feature(setting: &str, value: &str, enable: bool) -> Result<String, String> {
     // Check if settings file exists
     let settings_file = format!("/sys/devices/platform/lg-laptop/{setting}");
 
@@ -82,9 +84,27 @@ fn set_feature(setting: &str, value: &str, enable: &str) -> Result<String, Strin
         .map_err(|_| String::from("ERROR: {setting} setting file not found"))?;
 
     // Check if service unit file exists
-    let service_name = format!("lg-gram-{}.service", setting.replace('_', "-"));
+    let (unit_file, service_name) = if enable {
+        let service_name = format!("lg_gram_{setting}_{value}.service");
 
-    let unit_file = format!("/usr/lib/systemd/system/{service_name}");
+        (format!("/usr/lib/systemd/system/{service_name}"), service_name)
+    } else {
+        glob(&format!("/etc/systemd/system/**/lg_gram_{setting}_*.service")).ok()
+            .map(|paths| {
+                paths.into_iter()
+                    .flatten()
+                    .map(|path| {
+                        (
+                            path.display().to_string(),
+                            path.file_name().unwrap_or_default().to_string_lossy().into()
+                        )
+                    })
+                    .collect::<Vec<_>>()
+            })
+            .filter(|vec| vec.len() == 1)
+            .and_then(|vec| vec.first().map(ToOwned::to_owned))
+            .unwrap_or_else(|| (String::from("None"), String::from("None")))
+    };
 
     fs::metadata(&unit_file)
         .map_err(|_| String::from("ERROR: {service_name} unit file not found"))?;
@@ -97,7 +117,7 @@ fn set_feature(setting: &str, value: &str, enable: &str) -> Result<String, Strin
 
     // Enable/disable service
     let output = process::Command::new("systemctl")
-        .arg(enable)
+        .arg(if enable { "enable" } else { "disable" })
         .arg(&service_name)
         .output()
         .map_err(|error| error.to_string())?;
@@ -112,13 +132,13 @@ fn set_feature(setting: &str, value: &str, enable: &str) -> Result<String, Strin
 //---------------------------------------
 // Validate args function
 //---------------------------------------
-fn validate_args(args: &[String]) -> Result<(&str, &str, &str, &str), ()> {
+fn validate_args(args: &[String]) -> Result<(&str, &str, &str, bool), ()> {
     let Some(mode) = args.get(1) else {
         return Err(());
     };
 
     match mode.as_str() {
-        "--system-info" => { Ok((mode, "", "", "")) } 
+        "--system-info" => { Ok((mode, "", "", false)) } 
         "--feature" => {
             let Some((setting, value)) = args.get(2).and_then(|arg| arg.split_once('=')) else {
                 return Err(());
@@ -126,14 +146,10 @@ fn validate_args(args: &[String]) -> Result<(&str, &str, &str, &str), ()> {
 
             match (setting, value) {
                 ("battery_care_limit", value) if ["80", "100"].contains(&value) => {
-                    let enable = if value == "100" { "disable" } else { "enable" };
-
-                    Ok((mode, setting, value, enable))
+                    Ok((mode, setting, value, value != "100"))
                 },
                 ("fn_lock" | "usb_charge" | "reader_mode", value) if ["0", "1"].contains(&value) => {
-                    let enable = if value == "0" { "disable" } else { "enable" };
-
-                    Ok((mode, setting, value, enable))
+                    Ok((mode, setting, value, value != "0"))
                 },
                 _ => {
                     Err(())
