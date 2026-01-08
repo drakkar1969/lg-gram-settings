@@ -1,4 +1,4 @@
-use std::cell::{RefCell, OnceCell};
+use std::cell::{Cell, RefCell, OnceCell};
 
 use gtk::glib;
 use adw::subclass::prelude::*;
@@ -30,6 +30,9 @@ mod imp {
         on_value: RefCell<Option<String>>,
 
         pub(super) id: OnceCell<String>,
+
+        pub(super) selected_index: Cell<Option<u32>>,
+        pub(super) is_changing: Cell<bool>,
     }
 
     //---------------------------------------
@@ -47,6 +50,13 @@ mod imp {
             // Gram set feature action
             klass.install_action_async("gram.set-feature", Some(glib::VariantTy::STRING),
                 async |widget, _, param| {
+                    let imp = widget.imp();
+
+                    if imp.is_changing.get() {
+                        imp.is_changing.set(false);
+                        return;
+                    }
+
                     let Some(id) = widget.imp().id.get() else {
                         widget.throw_error("ERROR: setting ID not initialized");
                         return
@@ -58,7 +68,17 @@ mod imp {
                     };
 
                     if let Err(error) = gram::set_feature_async(&id, &value).await {
+                        imp.is_changing.set(true);
+
+                        if let Some(index) = imp.selected_index.get() {
+                            widget.set_selected(index);
+                        } else {
+                            widget.set_sensitive(false);
+                        }
+
                         widget.throw_error(&error);
+                    } else {
+                        imp.selected_index.set(Some(widget.selected()));
                     }
                 }
             );
@@ -156,9 +176,12 @@ impl GramWidget {
 
         match active_index {
             Ok(index) => {
+                let imp = self.imp();
+
                 self.set_selected(index as u32);
 
-                self.imp().id.set(id.to_owned()).unwrap();
+                imp.id.set(id.to_owned()).unwrap();
+                imp.selected_index.set(Some(index as u32));
 
                 self.set_sensitive(true);
             },
