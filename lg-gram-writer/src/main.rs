@@ -54,12 +54,19 @@ fn system_information() -> Result<String, String> {
             .map(|value| value.trim().to_owned())
     };
 
+    let sys_vendor = dmi_read("sys_vendor")?;
+    let product_family = dmi_read("product_family")?;
     let product_name = dmi_read("product_name")?;
     let product_serial = dmi_read("product_serial")?;
     let bios_vendor = dmi_read("bios_vendor")?;
     let bios_version = dmi_read("bios_version")?;
+    let bios_date = dmi_read("bios_date")?;
 
     let output = [
+        String::from("System Vendor"),
+        sys_vendor,
+        String::from("Product Family"),
+        product_family,
         String::from("Product Name"),
         product_name,
         String::from("Serial Number"),
@@ -68,6 +75,8 @@ fn system_information() -> Result<String, String> {
         bios_vendor,
         String::from("BIOS Version"),
         bios_version,
+        String::from("BIOS Date"),
+        bios_date,
     ].join("\n");
 
     Ok(output)
