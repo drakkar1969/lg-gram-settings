@@ -2,7 +2,7 @@
 <interface>
   <!--// MainWindow template //-->
   <template class="MainWindow" parent="AdwApplicationWindow">
-    <property name="default-width">600</property>
+    <property name="default-width">640</property>
     <property name="resizable">false</property>
     <property name="title"></property>
     <property name="content">
@@ -25,8 +25,8 @@
             <property name="content">
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
-                <property name="margin-start">24</property>
-                <property name="margin-end">24</property>
+                <property name="margin-start">36</property>
+                <property name="margin-end">36</property>
                 <property name="margin-top">12</property>
                 <property name="margin-bottom">36</property>
                 <child>
