@@ -598,7 +598,7 @@ dependencies = [
 
 [[package]]
 name = "lg-gram-settings"
-version = "0.7.1"
+version = "0.8.0"
 dependencies = [
  "async-process",
  "glib-build-tools",
@@ -608,7 +608,7 @@ dependencies = [
 
 [[package]]
 name = "lg-gram-writer"
-version = "0.7.1"
+version = "0.8.0"
 dependencies = [
  "glob",
  "nix",
