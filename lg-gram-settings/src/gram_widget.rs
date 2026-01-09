@@ -47,6 +47,41 @@ mod imp {
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
 
+            // Install actions
+            Self::install_actions(klass);
+        }
+
+        fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
+            obj.init_template();
+        }
+    }
+
+    #[glib::derived_properties]
+    impl ObjectImpl for GramWidget {
+        //---------------------------------------
+        // Constructor
+        //---------------------------------------
+        fn constructed(&self) {
+            self.parent_constructed();
+
+            let obj = self.obj();
+
+            obj.setup_widgets();
+            obj.setup_signals();
+        }
+    }
+
+    impl WidgetImpl for GramWidget {}
+    impl ListBoxRowImpl for GramWidget {}
+    impl PreferencesRowImpl for GramWidget {}
+    impl ActionRowImpl for GramWidget {}
+    impl ComboRowImpl for GramWidget {}
+
+    impl GramWidget {
+        //---------------------------------------
+        // Install actions
+        //---------------------------------------
+        fn install_actions(klass: &mut <Self as ObjectSubclass>::Class) {
             // Gram set feature action
             klass.install_action_async("gram.set-feature", Some(glib::VariantTy::STRING),
                 async |widget, _, param| {
@@ -83,32 +118,7 @@ mod imp {
                 }
             );
         }
-
-        fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
-            obj.init_template();
-        }
     }
-
-    #[glib::derived_properties]
-    impl ObjectImpl for GramWidget {
-        //---------------------------------------
-        // Constructor
-        //---------------------------------------
-        fn constructed(&self) {
-            self.parent_constructed();
-
-            let obj = self.obj();
-
-            obj.setup_widgets();
-            obj.setup_signals();
-        }
-    }
-
-    impl WidgetImpl for GramWidget {}
-    impl ListBoxRowImpl for GramWidget {}
-    impl PreferencesRowImpl for GramWidget {}
-    impl ActionRowImpl for GramWidget {}
-    impl ComboRowImpl for GramWidget {}
 }
 
 //------------------------------------------------------------------------------
