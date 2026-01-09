@@ -5,7 +5,6 @@
     <file alias="gram-battery-symbolic.svg">icons/gram-battery-symbolic.svg</file>
     <file alias="gram-fan-symbolic.svg">icons/gram-fan-symbolic.svg</file>
     <file alias="gram-fnlock-symbolic.svg">icons/gram-fnlock-symbolic.svg</file>
-    <file alias="gram-reader-symbolic.svg">icons/gram-reader-symbolic.svg</file>
     <file alias="gram-usb-symbolic.svg">icons/gram-usb-symbolic.svg</file>
   </gresource>
   <gresource prefix="/com/github/LGGramSettings/">

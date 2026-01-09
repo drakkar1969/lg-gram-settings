@@ -62,13 +62,6 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GramWidget" id="reader_mode_widget">
-                        <property name="icon-name">gram-reader-symbolic</property>
-                        <property name="title">_Reader Mode</property>
-                        <property name="subtitle">Reduce blue light in screen colors</property>
-                      </object>
-                    </child>
-                    <child>
                       <object class="GramWidget" id="fan_mode_widget">
                         <property name="icon-name">gram-fan-symbolic</property>
                         <property name="title">_Fan Mode</property>

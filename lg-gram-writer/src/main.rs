@@ -162,7 +162,7 @@ fn validate_args(args: &[String]) -> Result<(&str, &str, &str, bool), ()> {
                 ("battery_care_limit", value) if ["80", "100"].contains(&value) => {
                     Ok((mode, setting, value, value != "100"))
                 },
-                ("fn_lock" | "usb_charge" | "reader_mode", value) if ["0", "1"].contains(&value) => {
+                ("fn_lock" | "usb_charge", value) if ["0", "1"].contains(&value) => {
                     Ok((mode, setting, value, value != "0"))
                 },
                 ("fan_mode", value) if ["0", "1", "2"].contains(&value) => {

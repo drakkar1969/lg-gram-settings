@@ -11,7 +11,6 @@ use crate::lg_gram::gram;
 //------------------------------------------------------------------------------
 const BATTERY_LIMIT: &str = "battery_care_limit";
 const FN_LOCK: &str = "fn_lock";
-const READER_MODE: &str = "reader_mode";
 const USB_CHARGE: &str = "usb_charge";
 const FAN_MODE: &str = "fan_mode";
 
@@ -77,8 +76,6 @@ mod imp {
         pub(super) fn_lock_widget: TemplateChild<GramWidget>,
         #[template_child]
         pub(super) usb_charge_widget: TemplateChild<GramWidget>,
-        #[template_child]
-        pub(super) reader_mode_widget: TemplateChild<GramWidget>,
         #[template_child]
         pub(super) fan_mode_widget: TemplateChild<GramWidget>,
      }
@@ -207,7 +204,6 @@ impl MainWindow {
 
         imp.battery_limit_widget.init(BATTERY_LIMIT, BatteryCareLimit::static_type());
         imp.fn_lock_widget.init(FN_LOCK, OnOff::static_type());
-        imp.reader_mode_widget.init(READER_MODE, OnOff::static_type());
         imp.usb_charge_widget.init(USB_CHARGE, OnOff::static_type());
         imp.fan_mode_widget.init(FAN_MODE, FanMode::static_type());
     }
