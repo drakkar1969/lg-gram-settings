@@ -188,7 +188,12 @@ mod imp {
 
             // Open settings folder action
             klass.install_action_async("win.open-settings-folder", None, async |_, _, _| {
-                Self::open_folder_async("//sys/devices/platform/lg-laptop").await;
+                Self::open_folder_async("/sys/devices/platform/lg-laptop/").await;
+            });
+
+            // Open system info folder action
+            klass.install_action_async("win.open-system-info-folder", None, async |_, _, _| {
+                Self::open_folder_async("/sys/devices/virtual/dmi/id/").await;
             });
         }
     }

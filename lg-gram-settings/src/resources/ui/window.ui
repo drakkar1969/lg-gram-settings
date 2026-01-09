@@ -85,9 +85,15 @@
         <attribute name="label">Show System Information</attribute>
         <attribute name="action">win.show-system-info</attribute>
       </item>
+    </section>
+    <section>
       <item>
         <attribute name="label">Open Settings Folder</attribute>
         <attribute name="action">win.open-settings-folder</attribute>
+      </item>
+      <item>
+        <attribute name="label">Open System Information Folder</attribute>
+        <attribute name="action">win.open-system-info-folder</attribute>
       </item>
     </section>
     <section>
