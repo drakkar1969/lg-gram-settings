@@ -120,6 +120,17 @@ mod imp {
 
     impl MainWindow {
         //---------------------------------------
+        // Open folder helper function
+        //---------------------------------------
+        async fn open_folder_async(folder: &str) {
+            let uri = format!("file://{folder}");
+
+            if let Some(desktop) = AppInfo::default_for_type("inode/directory", true) {
+                let _ = desktop.launch_uris_future(&[&uri], None::<&AppLaunchContext>).await;
+            }
+        }
+
+        //---------------------------------------
         // Install actions
         //---------------------------------------
         fn install_actions(klass: &mut <Self as ObjectSubclass>::Class) {
@@ -177,13 +188,7 @@ mod imp {
 
             // Open settings folder action
             klass.install_action_async("win.open-settings-folder", None, async |_, _, _| {
-                let uri = "file:///sys/devices/platform/lg-laptop";
-
-                if let Some(desktop) = AppInfo::default_for_type("inode/directory", true) {
-                    let _ = desktop
-                        .launch_uris_future(&[&uri], None::<&AppLaunchContext>)
-                        .await;
-                }
+                Self::open_folder_async("//sys/devices/platform/lg-laptop").await;
             });
         }
     }
