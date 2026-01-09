@@ -43,17 +43,20 @@ fn main() {
 }
 
 //---------------------------------------
+// DMI read helper function function
+//---------------------------------------
+fn dmi_read(param: &str) -> Result<String, String> {
+    let file = format!("/sys/devices/virtual/dmi/id/{param}");
+
+    fs::read_to_string(file)
+        .map_err(|error| error.to_string())
+        .map(|value| value.trim().to_owned())
+}
+
+//---------------------------------------
 // System information function
 //---------------------------------------
 fn system_information() -> Result<String, String> {
-    let dmi_read = |string: &str| -> Result<String, String> {
-        let file = format!("/sys/devices/virtual/dmi/id/{string}");
-
-        fs::read_to_string(file)
-            .map_err(|error| error.to_string())
-            .map(|value| value.trim().to_owned())
-    };
-
     let sys_vendor = dmi_read("sys_vendor")?;
     let product_family = dmi_read("product_family")?;
     let product_name = dmi_read("product_name")?;
