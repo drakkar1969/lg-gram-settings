@@ -1,6 +1,7 @@
 use gtk::{gio, glib, pango};
 use adw::subclass::prelude::*;
 use adw::prelude::*;
+use gio::{AppInfo, AppLaunchContext};
 
 use crate::Application;
 use crate::gram_widget::GramWidget;
@@ -175,11 +176,13 @@ mod imp {
             });
 
             // Open settings folder action
-            klass.install_action("win.open-settings-folder", None, |_, _, _| {
+            klass.install_action_async("win.open-settings-folder", None, async |_, _, _| {
                 let uri = "file:///sys/devices/platform/lg-laptop";
 
-                if let Some(desktop) = gio::AppInfo::default_for_type("inode/directory", true) {
-                    let _res = desktop.launch_uris(&[uri], None::<&gio::AppLaunchContext>);
+                if let Some(desktop) = AppInfo::default_for_type("inode/directory", true) {
+                    let _ = desktop
+                        .launch_uris_future(&[&uri], None::<&AppLaunchContext>)
+                        .await;
                 }
             });
         }
