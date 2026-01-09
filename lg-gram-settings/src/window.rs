@@ -92,6 +92,36 @@ mod imp {
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
 
+            // Install actions
+            Self::install_actions(klass);
+        }
+
+        fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
+            obj.init_template();
+        }
+    }
+
+    impl ObjectImpl for MainWindow {
+        //---------------------------------------
+        // Constructor
+        //---------------------------------------
+        fn constructed(&self) {
+            self.parent_constructed();
+
+            self.obj().init_kernel_features();
+        }
+    }
+
+    impl WidgetImpl for MainWindow {}
+    impl WindowImpl for MainWindow {}
+    impl ApplicationWindowImpl for MainWindow {}
+    impl AdwApplicationWindowImpl for MainWindow {}
+
+    impl MainWindow {
+        //---------------------------------------
+        // Install actions
+        //---------------------------------------
+        fn install_actions(klass: &mut <Self as ObjectSubclass>::Class) {
             // Show error toast action
             klass.install_action("win.show-error-toast", Some(VariantTy::STRING),
                 |window, _, param| {
@@ -153,27 +183,7 @@ mod imp {
                 }
             });
         }
-
-        fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
-            obj.init_template();
-        }
     }
-
-    impl ObjectImpl for MainWindow {
-        //---------------------------------------
-        // Constructor
-        //---------------------------------------
-        fn constructed(&self) {
-            self.parent_constructed();
-
-            self.obj().init_kernel_features();
-        }
-    }
-
-    impl WidgetImpl for MainWindow {}
-    impl WindowImpl for MainWindow {}
-    impl ApplicationWindowImpl for MainWindow {}
-    impl AdwApplicationWindowImpl for MainWindow {}
 }
 
 //------------------------------------------------------------------------------
