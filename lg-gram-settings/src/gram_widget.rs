@@ -67,7 +67,7 @@ mod imp {
                         return
                     };
 
-                    if let Err(error) = gram::set_feature_async(&id, &value).await {
+                    if let Err(error) = gram::set_feature_async(id, &value).await {
                         imp.is_changing.set(true);
 
                         if let Some(index) = imp.selected_index.get() {

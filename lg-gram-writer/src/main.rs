@@ -108,7 +108,6 @@ fn set_feature(setting: &str, value: &str, enable: bool) -> Result<String, Strin
     // Disable enabled services
     for service in glob(&format!("/etc/systemd/system/**/lg_gram_{setting}_*.service"))
         .expect("Failed to read glob pattern")
-        .into_iter()
         .flatten()
         .map(|path| path.file_name().unwrap_or_default().to_string_lossy().to_string())
         .collect::<Vec<String>>() {

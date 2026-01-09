@@ -95,7 +95,7 @@ mod imp {
             // Show error toast action
             klass.install_action("win.show-error-toast", Some(VariantTy::STRING),
                 |window, _, param| {
-                    let error = param.and_then(|param| param.get::<String>())
+                    let error = param.and_then(glib::Variant::get::<String>)
                         .unwrap_or_else(|| String::from("ERROR: unknown error"));
 
                     let label = gtk::Label::builder()
